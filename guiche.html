@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <title>Guichê - Painel de Senhas</title>
   <style>
+    /* ... todo seu CSS igual ... */
     :root {
       --verde-hcpa: #276e5b;
       --amarelo-hcpa: #ffe900;
@@ -243,19 +244,22 @@
     let usuariosAutorizados = [];
     let usuarioLogado = null;
     let isAdmin = false;
-    
+
+    // NOVO BLOCO FIREBASE ABAIXO
     const firebaseConfig = {
       apiKey: "AIzaSyB-wxIiE1o4SlwhIAowvzDoP2MTCwHeUA8",
       authDomain: "senha-teste-3792a.firebaseapp.com",
+      databaseURL: "https://senha-teste-3792a-default-rtdb.firebaseio.com",
       projectId: "senha-teste-3792a",
-      storageBucket: "senha-teste-3792a.firebasestorage.app",
+      storageBucket: "senha-teste-3792a.appspot.com",
       messagingSenderId: "748802844835",
-      appId: "1:748802844835:web:bbc6b460935e417cab7716",
-      measurementId: "G-8Z29ZVKKJL"
+      appId: "1:748802844835:web:443305d871158d21ab7716",
+      measurementId: "G-P6PCN541CD"
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
+    // ... todo o restante do seu código permanece igual ...
     db.ref("usuariosAutorizados").on("value", snap => {
       usuariosAutorizados = snap.val() || [];
     });
