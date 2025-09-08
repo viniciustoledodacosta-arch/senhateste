@@ -1,4 +1,3 @@
-pppppppppppp
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -286,7 +285,7 @@ pppppppppppp
     </div>
   </div>
   <script>
-    // NOVO BLOCO FIREBASE ABAIXO
+    // BLOCO FIREBASE CORRETO
     const firebaseConfig = {
       apiKey: "AIzaSyB-wxIiE1o4SlwhIAowvzDoP2MTCwHeUA8",
       authDomain: "senha-teste-3792a.firebaseapp.com",
@@ -300,14 +299,12 @@ pppppppppppp
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // Atualiza painel em tempo real
     db.ref("chamadaSenha").on("value", snapshot => {
       const dados = snapshot.val();
       if (!dados) return;
       atualizarPainel(dados.tipo, dados.senha, dados.guiche);
     });
 
-    // Atualiza histórico em tempo real
     db.ref("historicoChamadas").on("value", snapshot => {
       const lista = snapshot.val() || [];
       atualizarHistorico(lista);
