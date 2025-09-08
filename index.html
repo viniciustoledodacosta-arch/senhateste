@@ -303,6 +303,8 @@
       const dados = snapshot.val();
       if (!dados) return;
       atualizarPainel(dados.tipo, dados.senha, dados.guiche);
+      // Fala em voz alta!
+      falarSenha(dados.tipo, dados.senha, dados.guiche);
     });
 
     db.ref("historicoChamadas").on("value", snapshot => {
@@ -370,6 +372,30 @@
         senhaNum.classList.add('vermelho');
       }
     }
+
+    // FALA EM VOZ ALTA AO CHAMAR SENHA!
+    function falarSenha(tipo, senha, guiche) {
+      if (!("speechSynthesis" in window)) return;
+      let texto = "";
+      if (tipo === "Agendar") {
+        texto = `Agendar, senha ${parseInt(senha, 10)}, guichê ${parseInt(guiche, 10)}`;
+      } else if (tipo === "Agendados") {
+        texto = `Realizar, senha ${parseInt(senha, 10)}, guichê ${parseInt(guiche, 10)}`;
+      } else {
+        texto = `Senha ${parseInt(senha, 10)}, guichê ${parseInt(guiche, 10)}`;
+      }
+      // Evita falar em loop se a senha não mudou
+      if(falarSenha.lastFalado === texto) return;
+      falarSenha.lastFalado = texto;
+      let utter = new window.SpeechSynthesisUtterance(texto);
+      utter.lang = "pt-BR";
+      utter.rate = 1;
+      utter.volume = 1;
+      utter.pitch = 1.1;
+      window.speechSynthesis.cancel(); // Para evitar sobreposição
+      window.speechSynthesis.speak(utter);
+    }
+    falarSenha.lastFalado = null;
   </script>
 </body>
 </html>
