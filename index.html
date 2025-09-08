@@ -1,11 +1,9 @@
-sssssssssssssssssssssssssssssssssssssssssssss
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
   <title>Painel de Senhas - Radiologia HCPA</title>
   <style>
-    /* ... (todo o seu CSS permanece igual) ... */
     :root {
       --verde-hcpa: #25806D;
       --amarelo-hcpa: #ffe900;
@@ -14,15 +12,8 @@ sssssssssssssssssssssssssssssssssssssssssssss
       --vermelho-agendados: #0074d9;
       --shadow: 0.05em 0.05em 0 var(--preto);
     }
-    html, body {
-      background: var(--verde-hcpa);
-      min-height: 100vh;
-      min-width: 100vw;
-      margin: 0; padding: 0;
-      font-family: Arial Black, Arial, Helvetica, sans-serif;
-      width: 100vw; height: 100vh; overflow: hidden;
-    }
-    #painel-main { width: 100vw; height: 100vh; display: flex; flex-direction: column; }
+    html, body { background: var(--verde-hcpa); min-height: 100vh; margin: 0; padding: 0; font-family: Arial Black, Arial, Helvetica, sans-serif; width: 100vw; height: 100vh; overflow: hidden;}
+    #painel-main { width: 100vw; height: 100vh; display: flex; flex-direction: column;}
     .header { width: 100vw; display: flex; align-items: center; justify-content: space-between; padding: 0 2vw; height: clamp(90px, 16vh, 200px); box-sizing: border-box; background: var(--verde-hcpa); border-bottom: 0.5vw solid var(--amarelo-hcpa);}
     .logo { height: clamp(60px, 13vh, 150px); width: auto; background: #fff; border-radius: 12px; object-fit: contain; margin-right: 2vw;}
     .logo-hcpa { height: clamp(50px, 12vh, 130px); width: auto; background: var(--verde-hcpa); border-radius: 24px; object-fit: contain; margin-left: 2vw;}
@@ -30,8 +21,8 @@ sssssssssssssssssssssssssssssssssssssssssssss
     .painel { flex: 1; display: flex; flex-direction: row; width: 100vw; min-height: 0; height: 1px;}
     .esquerda { width: 63vw; min-width: 320px; display: flex; flex-direction: column; align-items: stretch; box-sizing: border-box; border-right: 0.5vw solid var(--amarelo-hcpa); position: relative; background: var(--verde-hcpa);}
     .tipo-exame-bar { width: 100%; background: var(--preto); color: var(--amarelo-hcpa); font-size: clamp(1.5rem, 5.3vh, 6vw); font-weight: bold; text-align: center; letter-spacing: 0.08em; padding: 2.3vh 0 1.1vh 0; border-bottom: 0.5vw solid var(--amarelo-hcpa); text-shadow: var(--shadow); margin: 0; line-height: 1.1; white-space: nowrap;}
-    .tipo-exame-bar.azul { color: var(--azul-agendar); }
-    .tipo-exame-bar.vermelho { color: var(--vermelho-agendados); }
+    .tipo-exame-bar.azul { color: var(--azul-agendar);}
+    .tipo-exame-bar.vermelho { color: var(--vermelho-agendados);}
     .senha-area { width: 100%; background: var(--verde-hcpa); display: flex; flex-direction: column; align-items: center; padding: 5.5vh 0 0 0; flex: 1; min-height: 190vh; justify-content: flex-start;}
     .senha-label { font-size: clamp(5.2rem, 8.3vh, 12vw); color: var(--amarelo-hcpa); font-weight: bold; margin: 1.6vh 0 1.2vh 0; text-shadow: var(--shadow); text-align: center; line-height: 1; letter-spacing: 0.09em;}
     .senha-numero { font-size: clamp(18.2rem, 18.5vh, 20vw); font-weight: bold; color: var(--amarelo-hcpa); letter-spacing: 0.19em; text-shadow: var(--shadow); margin: 0.1vh 0 1vh 0; text-align: center; transition: color 0.2s; line-height: 1; word-break: keep-all;}
@@ -64,29 +55,18 @@ sssssssssssssssssssssssssssssssssssssssssssss
       }
     }
   </style>
-  <!-- Firebase scripts -->
+  <!-- Firebase compat -->
   <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-database-compat.js"></script>
 </head>
 <body>
-  <!-- Tela protegida por senha (administração) -->
-  <div id="senha-protect" class="senha-form">
-    <label for="senha">Senha de acesso:</label>
-    <input type="password" id="senha" autofocus>
-    <button onclick="checarSenha()">Entrar</button>
-    <div id="msgSenha" style="color:red;margin-top:8px;"></div>
-  </div>
-  <!-- Painel principal -->
-  <div id="painel-main" style="visibility:hidden;">
-    <!-- Cabeçalho -->
+  <div id="painel-main" style="visibility:visible;">
     <div class="header">
       <img src="logo-radiologia.png" class="logo" alt="Logo Radiologia">
       <div class="titulo">SERVIÇO DE RADIOLOGIA</div>
       <img src="logo-hcpa.png" class="logo-hcpa" alt="Logo HCPA">
     </div>
-    <!-- Painel central -->
     <div class="painel">
-      <!-- Lado esquerdo -->
       <div class="esquerda">
         <div id="tipoExame" class="tipo-exame-bar">---</div>
         <div id="senhaArea" class="senha-area">
@@ -94,7 +74,6 @@ sssssssssssssssssssssssssssssssssssssssssssss
           <div id="senhaAtual" class="senha-numero">---</div>
         </div>
       </div>
-      <!-- Lado direito -->
       <div class="direita">
         <div class="historico-header">
           <div>Senha Anterior</div>
@@ -103,7 +82,6 @@ sssssssssssssssssssssssssssssssssssssssssssss
         <ul id="historicoLista" class="historico-lista"></ul>
       </div>
     </div>
-    <!-- Faixa inferior fixa com guichê e aguarde a chamada -->
     <div class="faixa-inferior">
       <div class="faixa-inferior-top"></div>
       <div class="faixa-inferior-centro">
@@ -114,18 +92,7 @@ sssssssssssssssssssssssssssssssssssssssssssss
     </div>
   </div>
   <script>
-    // Senha para acessar o painel
-    const senhaCorreta = "radiologia2025";
-    function checarSenha() {
-      const senhaInput = document.getElementById("senha").value;
-      if (senhaInput === senhaCorreta) {
-        document.getElementById("senha-protect").style.display = "none";
-        document.getElementById("painel-main").style.visibility = "visible";
-      } else {
-        document.getElementById("msgSenha").textContent = "Senha incorreta!";
-      }
-    }
-    // NOVA CONFIGURAÇÃO FIREBASE senha-teste-3792a
+    // Firebase senha-teste-3792a
     const firebaseConfig = {
       apiKey: "AIzaSyB-wxIiE1o4SlwhIAowvzDoP2MTCwHeUA8",
       authDomain: "senha-teste-3792a.firebaseapp.com",
@@ -139,18 +106,21 @@ sssssssssssssssssssssssssssssssssssssssssssss
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // Variáveis para controle do último chamado
-    let ultimaSenha = "";
-    let ultimaTipo = "";
-
-    // Atualiza painel em tempo real via Firebase
+    // Atualiza painel em tempo real
     db.ref("chamadaSenha").on("value", snapshot => {
       const dados = snapshot.val();
       if (!dados) return;
       atualizarPainel(dados.tipo, dados.senha, dados.guiche);
-      atualizarHistorico(dados.historico || []);
+    });
+    // Atualiza histórico em tempo real
+    db.ref("historicoChamadas").on("value", snapshot => {
+      const lista = snapshot.val() || [];
+      atualizarHistorico(lista);
     });
 
+    // Função de animação/atualização
+    let ultimaSenha = "";
+    let ultimaTipo = "";
     function atualizarPainel(tipo, senha, guiche) {
       const tipoExameBar = document.getElementById('tipoExame');
       tipoExameBar.classList.remove('azul', 'vermelho');
@@ -173,9 +143,8 @@ sssssssssssssssssssssssssssssssssssssssssssss
       } else {
         setCorNumero(tipo);
       }
-      falarPainel(tipo, senha, guiche);
+      // Removido voz sintética para não incomodar ambiente real
     }
-
     function atualizarHistorico(lista) {
       const historico = document.getElementById('historicoLista');
       historico.innerHTML = '';
@@ -185,7 +154,6 @@ sssssssssssssssssssssssssssssssssssssssssssss
         historico.appendChild(li);
       });
     }
-
     function piscarChamada(tipo) {
       const senhaArea = document.getElementById('senhaArea');
       const senhaNum = document.getElementById('senhaAtual');
@@ -203,7 +171,6 @@ sssssssssssssssssssssssssssssssssssssssssssss
         setCorNumero(tipo);
       }, 4900);
     }
-
     function setCorNumero(tipo) {
       const senhaNum = document.getElementById('senhaAtual');
       senhaNum.classList.remove('azul', 'vermelho');
@@ -213,21 +180,6 @@ sssssssssssssssssssssssssssssssssssssssssssss
         senhaNum.classList.add('vermelho');
       }
     }
-
-    function falarPainel(tipo, senha, guiche) {
-      const guicheVoz = parseInt(guiche, 10);
-      let frase = tipo === "Agendar"
-        ? `EXAMES PARA AGENDAR, senha ${senha}, guichê ${guicheVoz}`
-        : tipo === "Agendados"
-        ? `REALIZAR EXAMES, senha ${senha}, guichê ${guicheVoz}`
-        : `Senha ${senha}, guichê ${guicheVoz}`;
-      const synth = window.speechSynthesis;
-      const utter = new SpeechSynthesisUtterance(frase);
-      utter.lang = "pt-BR";
-      synth.cancel();
-      synth.speak(utter);
-    }
   </script>
 </body>
 </html>
-
