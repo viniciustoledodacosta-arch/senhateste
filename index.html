@@ -4,251 +4,41 @@
   <meta charset="UTF-8">
   <title>Painel de Senhas - Radiologia HCPA</title>
   <style>
-    :root {
-      --verde-hcpa: #25806D;
-      --amarelo-hcpa: #ffe900;
-      --preto: #000;
-      --azul-agendar: #d70000;
-      --vermelho-agendados: #0074d9;
-      --shadow: 0.05em 0.05em 0 var(--preto);
-    }
-    html, body {
-      background: var(--verde-hcpa);
-      min-height: 100vh;
-      min-width: 100vw;
-      margin: 0; padding: 0;
-      font-family: Arial Black, Arial, Helvetica, sans-serif;
-      width: 100vw; height: 100vh; overflow: hidden;
-    }
-    #painel-main {
-      width: 100vw; height: 100vh;
-      display: flex; flex-direction: column;
-    }
-    .header {
-      width: 100vw;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 2vw;
-      height: clamp(90px, 16vh, 200px);
-      box-sizing: border-box;
-      background: var(--verde-hcpa);
-      border-bottom: 0.5vw solid var(--amarelo-hcpa);
-    }
-    .logo {
-      height: clamp(60px, 13vh, 150px); width: auto;
-      background: #fff;
-      border-radius: 12px;
-      object-fit: contain;
-      margin-right: 2vw;
-    }
-    .logo-hcpa {
-      height: clamp(50px, 12vh, 130px); width: auto;
-      background: var(--verde-hcpa);
-      border-radius: 24px;
-      object-fit: contain;
-      margin-left: 2vw;
-    }
-    .titulo {
-      flex: 1;
-      text-align: center;
-      font-size: clamp(4.6rem, 5.2vh, 6vw);
-      font-weight: bold;
-      color: var(--amarelo-hcpa);
-      letter-spacing: 0.15em;
-      text-shadow: var(--shadow);
-      margin: 0 2vw;
-      line-height: 1;
-      word-break: keep-all;
-    }
-    .painel {
-      flex: 1;
-      display: flex;
-      flex-direction: row;
-      width: 100vw;
-      min-height: 0;
-      height: 1px;
-    }
-    .esquerda {
-      width: 63vw;
-      min-width: 320px;
-      display: flex;
-      flex-direction: column;
-      align-items: stretch;
-      box-sizing: border-box;
-      border-right: 0.5vw solid var(--amarelo-hcpa);
-      position: relative;
-      background: var(--verde-hcpa);
-    }
-    .tipo-exame-bar {
-      width: 100%;
-      background: var(--preto);
-      color: var(--amarelo-hcpa);
-      font-size: clamp(1.5rem, 5.3vh, 6vw);
-      font-weight: bold;
-      text-align: center;
-      letter-spacing: 0.08em;
-      padding: 2.3vh 0 1.1vh 0;
-      border-bottom: 0.5vw solid var(--amarelo-hcpa);
-      text-shadow: var(--shadow);
-      margin: 0; line-height: 1.1;
-      white-space: nowrap;
-    }
-    .tipo-exame-bar.azul { color: var(--azul-agendar); }
-    .tipo-exame-bar.vermelho { color: var(--vermelho-agendados); }
-    .senha-area {
-      width: 100%;
-      background: var(--verde-hcpa);
-      display: flex; flex-direction: column; align-items: center;
-      padding: 5.5vh 0 0 0;
-      flex: 1; min-height: 190vh; justify-content: flex-start;
-    }
-    .senha-label {
-      font-size: clamp(5.2rem, 8.3vh, 12vw);
-      color: var(--amarelo-hcpa);
-      font-weight: bold;
-      margin: 1.6vh 0 1.2vh 0;
-      text-shadow: var(--shadow);
-      text-align: center;
-      line-height: 1;
-      letter-spacing: 0.09em;
-    }
-    .senha-numero {
-      font-size: clamp(18.2rem, 18.5vh, 20vw);
-      font-weight: bold;
-      color: var(--amarelo-hcpa);
-      letter-spacing: 0.19em;
-      text-shadow: var(--shadow);
-      margin: 0.1vh 0 1vh 0;
-      text-align: center;
-      transition: color 0.2s;
-      line-height: 1;
-      word-break: keep-all;
-    }
+    :root { --verde-hcpa: #25806D; --amarelo-hcpa: #ffe900; --preto: #000; --azul-agendar: #d70000; --vermelho-agendados: #0074d9; --shadow: 0.05em 0.05em 0 var(--preto);}
+    html, body { background: var(--verde-hcpa); min-height: 100vh; min-width: 100vw; margin: 0; padding: 0; font-family: Arial Black, Arial, Helvetica, sans-serif; width: 100vw; height: 100vh; overflow: hidden;}
+    #painel-main { width: 100vw; height: 100vh; display: flex; flex-direction: column;}
+    .header { width: 100vw; display: flex; align-items: center; justify-content: space-between; padding: 0 2vw; height: clamp(90px, 16vh, 200px); box-sizing: border-box; background: var(--verde-hcpa); border-bottom: 0.5vw solid var(--amarelo-hcpa);}
+    .logo { height: clamp(60px, 13vh, 150px); width: auto; background: #fff; border-radius: 12px; object-fit: contain; margin-right: 2vw;}
+    .logo-hcpa { height: clamp(50px, 12vh, 130px); width: auto; background: var(--verde-hcpa); border-radius: 24px; object-fit: contain; margin-left: 2vw;}
+    .titulo { flex: 1; text-align: center; font-size: clamp(4.6rem, 5.2vh, 6vw); font-weight: bold; color: var(--amarelo-hcpa); letter-spacing: 0.15em; text-shadow: var(--shadow); margin: 0 2vw; line-height: 1; word-break: keep-all;}
+    .painel { flex: 1; display: flex; flex-direction: row; width: 100vw; min-height: 0; height: 1px;}
+    .esquerda { width: 63vw; min-width: 320px; display: flex; flex-direction: column; align-items: stretch; box-sizing: border-box; border-right: 0.5vw solid var(--amarelo-hcpa); position: relative; background: var(--verde-hcpa);}
+    .tipo-exame-bar { width: 100%; background: var(--preto); color: var(--amarelo-hcpa); font-size: clamp(1.5rem, 5.3vh, 6vw); font-weight: bold; text-align: center; letter-spacing: 0.08em; padding: 2.3vh 0 1.1vh 0; border-bottom: 0.5vw solid var(--amarelo-hcpa); text-shadow: var(--shadow); margin: 0; line-height: 1.1; white-space: nowrap;}
+    .tipo-exame-bar.azul { color: var(--azul-agendar);}
+    .tipo-exame-bar.vermelho { color: var(--vermelho-agendados);}
+    .senha-area { width: 100%; background: var(--verde-hcpa); display: flex; flex-direction: column; align-items: center; padding: 5.5vh 0 0 0; flex: 1; min-height: 190vh; justify-content: flex-start;}
+    .senha-label { font-size: clamp(5.2rem, 8.3vh, 12vw); color: var(--amarelo-hcpa); font-weight: bold; margin: 1.6vh 0 1.2vh 0; text-shadow: var(--shadow); text-align: center; line-height: 1; letter-spacing: 0.09em;}
+    .senha-numero { font-size: clamp(18.2rem, 18.5vh, 20vw); font-weight: bold; color: var(--amarelo-hcpa); letter-spacing: 0.19em; text-shadow: var(--shadow); margin: 0.1vh 0 1vh 0; text-align: center; transition: color 0.2s; line-height: 1; word-break: keep-all;}
     .senha-numero.azul { color: var(--azul-agendar);}
     .senha-numero.vermelho { color: var(--vermelho-agendados);}
-    .direita {
-      flex: 1; width: 37vw; min-width: 250px;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: stretch;
-      justify-content: flex-start;
-      box-sizing: border-box;
-      position: relative;
-      background: var(--verde-hcpa);
-    }
-    .historico-header {
-      display: flex;
-      flex-direction: row;
-      justify-content: space-between;
-      align-items: center;
-      background: var(--verde-hcpa);
-      color: var(--amarelo-hcpa);
-      font-size: clamp(1rem, 3.6vh, 2vw);
-      font-weight: bold;
-      text-align: center;
-      border-bottom: 2px solid var(--amarelo-hcpa);
-      padding: 1.2vh 0 1.2vh 0;
-      margin: 0 0.5vw;
-      text-shadow: var(--shadow);
-      white-space: nowrap;
-    }
+    .direita { flex: 1; width: 37vw; min-width: 250px; height: 100%; display: flex; flex-direction: column; align-items: stretch; justify-content: flex-start; box-sizing: border-box; position: relative; background: var(--verde-hcpa);}
+    .historico-header { display: flex; flex-direction: row; justify-content: space-between; align-items: center; background: var(--verde-hcpa); color: var(--amarelo-hcpa); font-size: clamp(1rem, 3.6vh, 2vw); font-weight: bold; text-align: center; border-bottom: 2px solid var(--amarelo-hcpa); padding: 1.2vh 0 1.2vh 0; margin: 0 0.5vw; text-shadow: var(--shadow); white-space: nowrap;}
     .historico-header > div { flex: 1; text-align: center; }
-    .historico-lista {
-      width: 100%;
-      min-height: 25vh;
-      background: var(--verde-hcpa);
-      color: var(--amarelo-hcpa);
-      font-size: clamp(1rem, 3.6vh, 2vw);
-      text-align: left;
-      padding: 0;
-      margin: 0 0.5vw;
-      list-style: none;
-    }
-    .historico-lista li {
-      display: flex;
-      flex-direction: row;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1.1vh 2vw;
-      border-bottom: 1px solid #ffe90055;
-      font-size: clamp(0.9rem, 3.5vh, 2vw);
-      background: var(--verde-hcpa);
-      color: var(--amarelo-hcpa);
-      letter-spacing: 0.04em;
-    }
-    .faixa-inferior {
-      width: 100vw;
-      position: fixed;
-      left: 0; bottom: 0; z-index: 10;
-    }
-    .faixa-inferior-top {
-      width: 100vw; height: 0.5vw;
-      background: var(--amarelo-hcpa);
-    }
-    .faixa-inferior-centro {
-      width: 100vw;
-      display: flex;
-      flex-direction: row;
-      align-items: stretch;
-      background: var(--preto);
-      height: clamp(55px, 10.5vh, 130px);
-      border-bottom: 0.3vw solid var(--amarelo-hcpa);
-    }
-    .faixa-guiche {
-      width: 63vw; min-width: 200px; max-width: 80vw;
-      display: flex; align-items: center; justify-content: flex-start;
-      color: #fff;
-      font-size: clamp( 7rem, 7vh, 10vw);
-      font-weight: bold;
-      padding-left: 14vw;
-      letter-spacing: 0.08em;
-      height: 100%; background: none;
-    }
-    .faixa-aguarde {
-      width: 37vw; min-width: 100px; max-width: 37vw;
-      display: flex; align-items: center; justify-content: center;
-      color: var(--amarelo-hcpa);
-      font-size: clamp( 2rem, 2.2vh, 4vw);
-      font-weight: bold;
-      letter-spacing: 0.11em; text-shadow: var(--shadow);
-      height: 100%; background: none;
-    }
-    .faixa-inferior-bottom {
-      width: 100vw; height: 0.5vw;
-      background: var(--amarelo-hcpa);
-    }
+    .historico-lista { width: 100%; min-height: 25vh; background: var(--verde-hcpa); color: var(--amarelo-hcpa); font-size: clamp(1rem, 3.6vh, 2vw); text-align: left; padding: 0; margin: 0 0.5vw; list-style: none;}
+    .historico-lista li { display: flex; flex-direction: row; justify-content: space-between; align-items: center; padding: 1.1vh 2vw; border-bottom: 1px solid #ffe90055; font-size: clamp(0.9rem, 3.5vh, 2vw); background: var(--verde-hcpa); color: var(--amarelo-hcpa); letter-spacing: 0.04em;}
+    .faixa-inferior { width: 100vw; position: fixed; left: 0; bottom: 0; z-index: 10;}
+    .faixa-inferior-top { width: 100vw; height: 0.5vw; background: var(--amarelo-hcpa);}
+    .faixa-inferior-centro { width: 100vw; display: flex; flex-direction: row; align-items: stretch; background: var(--preto); height: clamp(55px, 10.5vh, 130px); border-bottom: 0.3vw solid var(--amarelo-hcpa);}
+    .faixa-guiche { width: 63vw; min-width: 200px; max-width: 80vw; display: flex; align-items: center; justify-content: flex-start; color: #fff; font-size: clamp( 7rem, 7vh, 10vw); font-weight: bold; padding-left: 14vw; letter-spacing: 0.08em; height: 100%; background: none;}
+    .faixa-aguarde { width: 37vw; min-width: 100px; max-width: 37vw; display: flex; align-items: center; justify-content: center; color: var(--amarelo-hcpa); font-size: clamp( 2rem, 2.2vh, 4vw); font-weight: bold; letter-spacing: 0.11em; text-shadow: var(--shadow); height: 100%; background: none;}
+    .faixa-inferior-bottom { width: 100vw; height: 0.5vw; background: var(--amarelo-hcpa);}
     .senha-area.piscando { animation: pisca-fundo 0.7s alternate 7; }
-    @keyframes pisca-fundo {
-      0%   { background: #fff700;}
-      35%  { background: #e38800;}
-      65%  { background: #fff700;}
-      100% { background: #e38800;}
-    }
-    .senha-numero.piscando-agendar {
-      animation: pisca-numero-azul 0.7s alternate 7;
-    }
-    @keyframes pisca-numero-azul {
-      0%   { color: #d70000;}
-      50%  { color: #940303;}
-      100% { color: #d70000;}
-    }
-    .senha-numero.piscando-agendados {
-      animation: pisca-numero-vermelho 0.7s alternate 7;
-    }
-    @keyframes pisca-numero-vermelho {
-      0%   { color: #0074d9;}
-      50%  { color: #0755db;}
-      100% { color: #0074d9;}
-    }
-    @media (max-width:900px), (max-height:700px) {
-      .titulo, .tipo-exame-bar, .senha-label, .senha-numero, .faixa-guiche, .faixa-aguarde {
-        font-size: 2.2vh !important;
-      }
-    }
+    @keyframes pisca-fundo { 0%{background:#fff700;} 35%{background:#e38800;} 65%{background:#fff700;} 100%{background:#e38800;} }
+    .senha-numero.piscando-agendar { animation: pisca-numero-azul 0.7s alternate 7; }
+    @keyframes pisca-numero-azul { 0%{color:#d70000;}50%{color:#940303;}100%{color:#d70000;} }
+    .senha-numero.piscando-agendados { animation: pisca-numero-vermelho 0.7s alternate 7; }
+    @keyframes pisca-numero-vermelho { 0%{color:#0074d9;}50%{color:#0755db;}100%{color:#0074d9;} }
   </style>
-  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-database-compat.js"></script>
 </head>
@@ -285,7 +75,6 @@
     </div>
   </div>
   <script>
-    // BLOCO FIREBASE CORRETO
     const firebaseConfig = {
       apiKey: "AIzaSyB-wxIiE1o4SlwhIAowvzDoP2MTCwHeUA8",
       authDomain: "senha-teste-3792a.firebaseapp.com",
@@ -299,12 +88,31 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
+    let ultimaSenha = "";
+    let ultimaTipo = "";
+    let ultimaRepetir = undefined;
+    let ultimaTs = undefined;
+
     db.ref("chamadaSenha").on("value", snapshot => {
       const dados = snapshot.val();
       if (!dados) return;
+      // Mudou senha, tipo ou foi rechamada? Pisca e fala!
+      let mudou = false;
+      if (
+        dados.senha !== ultimaSenha ||
+        dados.tipo !== ultimaTipo ||
+        dados.repetir !== ultimaRepetir ||
+        dados.ts !== ultimaTs
+      ) {
+        mudou = true;
+        piscarChamada(dados.tipo);
+        falarSenha(dados.tipo, dados.senha, dados.guiche);
+        ultimaSenha = dados.senha;
+        ultimaTipo = dados.tipo;
+        ultimaRepetir = dados.repetir;
+        ultimaTs = dados.ts;
+      }
       atualizarPainel(dados.tipo, dados.senha, dados.guiche);
-      // Fala em voz alta!
-      falarSenha(dados.tipo, dados.senha, dados.guiche);
     });
 
     db.ref("historicoChamadas").on("value", snapshot => {
@@ -312,8 +120,6 @@
       atualizarHistorico(lista);
     });
 
-    let ultimaSenha = "";
-    let ultimaTipo = "";
     function atualizarPainel(tipo, senha, guiche) {
       const tipoExameBar = document.getElementById('tipoExame');
       tipoExameBar.classList.remove('azul', 'vermelho');
@@ -329,14 +135,9 @@
       document.getElementById('senhaAtual').textContent = senha;
       document.getElementById('guicheFaixa').textContent = `Guichê ${parseInt(guiche, 10)}`;
       document.getElementById('senhaAtual').classList.remove('azul', 'vermelho');
-      if (senha !== ultimaSenha || tipo !== ultimaTipo) {
-        piscarChamada(tipo);
-        ultimaSenha = senha;
-        ultimaTipo = tipo;
-      } else {
-        setCorNumero(tipo);
-      }
+      setCorNumero(tipo);
     }
+
     function atualizarHistorico(lista) {
       const historico = document.getElementById('historicoLista');
       historico.innerHTML = '';
@@ -378,24 +179,23 @@
       if (!("speechSynthesis" in window)) return;
       let texto = "";
       if (tipo === "Agendar") {
-        texto = `Agendar, senha ${parseInt(senha, 10)}, guichê ${parseInt(guiche, 10)}`;
+        texto = `Exames para agendar, senha ${parseInt(senha, 10)}, guichê ${parseInt(guiche, 10)}`;
       } else if (tipo === "Agendados") {
-        texto = `Realizar, senha ${parseInt(senha, 10)}, guichê ${parseInt(guiche, 10)}`;
+        texto = `Realizar exames, senha ${parseInt(senha, 10)}, guichê ${parseInt(guiche, 10)}`;
       } else {
         texto = `Senha ${parseInt(senha, 10)}, guichê ${parseInt(guiche, 10)}`;
       }
-      // Evita falar em loop se a senha não mudou
-      if(falarSenha.lastFalado === texto) return;
-      falarSenha.lastFalado = texto;
+      // Fala sempre que chamado (inclusive na rechamada), pois a função é chamada apenas quando mudou senha/tipo/repetir/ts
+      if(window.speechSynthesis.speaking || window.speechSynthesis.pending){
+        window.speechSynthesis.cancel();
+      }
       let utter = new window.SpeechSynthesisUtterance(texto);
       utter.lang = "pt-BR";
       utter.rate = 1;
       utter.volume = 1;
       utter.pitch = 1.1;
-      window.speechSynthesis.cancel(); // Para evitar sobreposição
       window.speechSynthesis.speak(utter);
     }
-    falarSenha.lastFalado = null;
   </script>
 </body>
 </html>
