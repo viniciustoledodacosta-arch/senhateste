@@ -11,21 +11,7 @@
       --preto: #000;
       --cinza-texto: #fffbe5;
     }
-    <!-- MINI PAINEL HISTÓRICO -->
-<div class="painel-historico" id="painelHistorico" style="display:none;position:fixed;top:50px;right:40px;z-index:99;">
-  <div class="painel-historico-titulo" style="font-size:1.25em;font-weight:bold;color:#ffe900;margin-bottom:10px;">Senhas Chamadas</div>
-  <ul class="painel-historico-lista" id="painelHistoricoLista" style="width:100%;list-style:none;padding:0;margin:0;max-height:310px;overflow-y:auto;"></ul>
-</div>
-<style>
-.painel-historico{background:#000;border-radius:12px;min-width:220px;max-width:250px;color:#ffe900;padding:18px 12px 12px 18px;font-size:1em;height:370px;display:flex;flex-direction:column;align-items:flex-start;box-shadow:0 0 10px #0007;}
-.painel-historico-titulo{font-size:1.25em;font-weight:bold;color:#ffe900;margin-bottom:12px;text-align:left;width:100%;letter-spacing:0.03em;}
-.painel-historico-lista li{border-bottom:1px solid #ffe90033;padding:5px 0;font-size:1.07em;display:flex;flex-direction:column;align-items:flex-start;word-break:break-word;}
-.painel-historico-li-top{font-weight:bold;margin-bottom:1px;}
-.painel-historico-li-bottom{font-size:0.95em;color:#ffe900cc;}
-@media (max-width: 950px){
-  .painel-historico{position:static;margin: 20px auto;}
-}
-</style>
+
     body {
       background: var(--verde-hcpa);
       color: var(--amarelo-hcpa);
@@ -760,7 +746,23 @@ checarLogin = function(){
   },0);
 };
   </script>
+    <!-- MINI PAINEL HISTÓRICO -->
+<div class="painel-historico" id="painelHistorico" style="display:none;position:fixed;top:50px;right:40px;z-index:99;">
+  <div class="painel-historico-titulo" style="font-size:1.25em;font-weight:bold;color:#ffe900;margin-bottom:10px;">Senhas Chamadas</div>
+  <ul class="painel-historico-lista" id="painelHistoricoLista" style="width:100%;list-style:none;padding:0;margin:0;max-height:310px;overflow-y:auto;"></ul>
+</div>
+<style>
+.painel-historico{background:#000;border-radius:12px;min-width:220px;max-width:250px;color:#ffe900;padding:18px 12px 12px 18px;font-size:1em;height:370px;display:flex;flex-direction:column;align-items:flex-start;box-shadow:0 0 10px #0007;}
+.painel-historico-titulo{font-size:1.25em;font-weight:bold;color:#ffe900;margin-bottom:12px;text-align:left;width:100%;letter-spacing:0.03em;}
+.painel-historico-lista li{border-bottom:1px solid #ffe90033;padding:5px 0;font-size:1.07em;display:flex;flex-direction:column;align-items:flex-start;word-break:break-word;}
+.painel-historico-li-top{font-weight:bold;margin-bottom:1px;}
+.painel-historico-li-bottom{font-size:0.95em;color:#ffe900cc;}
+@media (max-width: 950px){
+  .painel-historico{position:static;margin: 20px auto;}
+}
+</style>
 </body>
 </html>
+
 
 
