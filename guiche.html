@@ -1,4 +1,3 @@
-xxxxxxxxxx
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -11,15 +10,23 @@ xxxxxxxxxx
       --preto: #000;
       --cinza-texto: #fffbe5;
     }
-    body {
+    html, body {
       background: var(--verde-hcpa);
       color: var(--amarelo-hcpa);
       font-family: Arial, Helvetica, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
       height: 100vh;
       margin: 0;
+      width: 100vw;
+      min-height: 100vh;
+      min-width: 100vw;
+    }
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      min-width: 100vw;
     }
     .main-flex {
       display: flex;
@@ -94,22 +101,37 @@ xxxxxxxxxx
       width: 220px; max-width: 90vw;
       font-size: 1.17em;
     }
+    .senha-wrapper {
+      position: relative;
+      width: 220px;
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+    }
     #senha-eye {
       position: absolute;
-      right: 36px;
-      top: 137px;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
       background: none;
       border: none;
       cursor: pointer;
-      font-size: 1.2em;
+      font-size: 1.25em;
       color: #ffe900;
       outline: none;
       z-index: 2;
+      padding: 2px 4px;
+      height: 32px;
+      width: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     @media (max-width: 700px) {
       .container, .admin-area, .relatorio-area, .senha-form { min-width: 95vw; max-width: 97vw; padding-left: 4vw; padding-right: 4vw;}
       .painel-historico { min-width: 90vw; max-width: 98vw; }
-      #senha-eye { right: 18px;}
+      #senha-eye { right: 4vw;}
+      .senha-wrapper { width: 98vw; }
     }
     /* MINI HISTÓRICO */
     .painel-historico {
@@ -195,8 +217,8 @@ xxxxxxxxxx
     <input type="text" id="usuario" autocomplete="username" autofocus>
     <br>
     <label for="senha">Senha de acesso:</label>
-    <div style="position:relative;">
-      <input type="password" id="senha" autocomplete="current-password" style="padding-right:32px;">
+    <div class="senha-wrapper">
+      <input type="password" id="senha" autocomplete="current-password">
       <button id="senha-eye" type="button" tabindex="-1" onclick="toggleSenhaVisivel()" aria-label="Mostrar ou ocultar senha">&#128065;</button>
     </div>
     <button type="submit" style="margin-top:12px;">Entrar</button>
@@ -204,17 +226,7 @@ xxxxxxxxxx
   </form>
   <script>
     // === LOGIN CENTRALIZADO E COM ENTER + OLHO NA SENHA ===
-    function centralizarLogin() {
-      const form = document.getElementById('form-login');
-      form.style.display = 'flex';
-      form.style.position = 'absolute';
-      form.style.left = '50%';
-      form.style.top = '50%';
-      form.style.transform = 'translate(-50%,-50%)';
-    }
-    centralizarLogin();
-
-    // Enter no login
+    // (tela já centralizada pelo CSS, login com enter)
     document.getElementById('form-login').addEventListener('submit', function(e){
       e.preventDefault();
       checarLogin();
@@ -272,6 +284,7 @@ xxxxxxxxxx
       const senhaInput = document.getElementById("senha").value;
       let msg = document.getElementById("msgSenha");
 
+      // Admin
       if (usuario === usuarioAdmin && senhaInput === senhaAdmin) {
         usuarioLogado = usuarioAdmin;
         isAdmin = true;
@@ -282,6 +295,7 @@ xxxxxxxxxx
         atualizarMiniHistorico();
         return;
       }
+      // Usuário comum
       if (usuariosAutorizados.includes(usuario) && senhaInput === senhaCorreta) {
         usuarioLogado = usuario;
         isAdmin = false;
