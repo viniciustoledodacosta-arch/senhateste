@@ -200,10 +200,8 @@
       .container, .admin-area, .relatorio-area { min-width: 95vw; max-width: 97vw; padding-left: 4vw; padding-right: 4vw;}
     }
   </style>
-  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-database-compat.js"></script>
-  <!-- SheetJS para exportação Excel com várias abas -->
   <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
 </head>
 <body>
@@ -212,7 +210,6 @@
     <div id="usuarioLogado" style="color:#fffbe5;margin-bottom:12px;font-size:1.1em;"></div>
     <label for="guicheNum">Número do Guichê:</label>
     <input type="number" id="guicheNum" min="1" max="20" value="1" required><br>
-    <!-- Dois botões separados -->
     <button class="botao" onclick="chamarSenhaDireto('Agendar')">Senha Agendar</button>
     <button class="botao" onclick="chamarSenhaDireto('Agendados')">Senha Realizar</button>
     <button class="botao" onclick="chamarSenha('repetir')">Rechamar</button>
@@ -240,7 +237,6 @@
     let usuarioLogado = null;
     let isAdmin = false;
 
-    // BLOCO FIREBASE CORRETO
     const firebaseConfig = {
       apiKey: "AIzaSyB-wxIiE1o4SlwhIAowvzDoP2MTCwHeUA8",
       authDomain: "senha-teste-3792a.firebaseapp.com",
@@ -295,26 +291,33 @@
       msg.textContent = "Usuário ou senha incorretos!";
     }
 
-    // NOVAS FUNÇÕES PARA OS DOIS BOTÕES
     function chamarSenhaDireto(tipoSenha) {
       let guiche = document.getElementById('guicheNum').value.padStart(2, '0');
       historicoGuiche[guiche] = historicoGuiche[guiche] || {};
+      document.querySelectorAll('.botao').forEach(btn => btn.disabled = true);
+
       db.ref("contadoresSenha/" + tipoSenha).transaction(function (currentValue) {
         if (currentValue === null || isNaN(currentValue)) currentValue = 0;
-        let senhaStr = String(currentValue).padStart(3, '0');
+        return (currentValue + 1) % 1000;
+      }, function(error, committed, snapshot) {
+        document.querySelectorAll('.botao').forEach(btn => btn.disabled = false);
+        if (error || !committed) {
+          document.getElementById("msg").textContent = "Erro ao chamar senha, tente novamente!";
+          return;
+        }
+        let senhaAtual = snapshot.val();
+        let senhaStr = String(senhaAtual === 0 ? 999 : senhaAtual - 1).padStart(3, '0');
+        if (senhaAtual === 0) senhaStr = "999";
         historicoGuiche[guiche][tipoSenha] = { senha: senhaStr, timestamp: Date.now() };
         enviarSenha(tipoSenha, senhaStr, guiche, false);
         registrarAtendimento(tipoSenha, senhaStr, guiche);
-        return (currentValue + 1) % 1000;
-      });
+      }, false);
     }
 
-    // Mantém o botão de "Rechamar" igual
     function chamarSenha(tipoChamada) {
       let guiche = document.getElementById('guicheNum').value.padStart(2, '0');
       let tipoSenha = null;
       if (tipoChamada === 'repetir') {
-        // Tenta rechamar primeiro Agendados, depois Agendar
         if (historicoGuiche[guiche] && historicoGuiche[guiche]["Agendados"]) {
           tipoSenha = "Agendados";
         } else if (historicoGuiche[guiche] && historicoGuiche[guiche]["Agendar"]) {
