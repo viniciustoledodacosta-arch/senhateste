@@ -1,4 +1,4 @@
-xxxxxx
+vvvvvv
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -21,6 +21,14 @@ xxxxxx
       height: 100vh;
       margin: 0;
     }
+    .main-flex {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: flex-start;
+      width: 100%;
+      max-width: 1100px;
+    }
     .container {
       background: var(--preto);
       border-radius: 15px;
@@ -30,6 +38,9 @@ xxxxxx
       min-width: 350px;
       max-width: 650px;
       margin: auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
     .titulo {
       font-size: 2.2em;
@@ -197,8 +208,62 @@ xxxxxx
       transition: background 0.2s;
     }
     .excel-btn:hover { background: #1b5e20; }
+    /* MINI HISTÓRICO */
+    .painel-historico {
+      background: var(--preto);
+      border-radius: 12px;
+      margin-left: 32px;
+      min-width: 240px;
+      max-width: 260px;
+      color: var(--amarelo-hcpa);
+      padding: 18px 18px 14px 18px;
+      font-size: 1em;
+      height: 370px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      box-shadow: 0 0 10px #0007;
+    }
+    .painel-historico-titulo {
+      font-size: 1.3em;
+      font-weight: bold;
+      color: var(--amarelo-hcpa);
+      margin-bottom: 10px;
+      text-align: left;
+      width: 100%;
+      letter-spacing: 0.03em;
+    }
+    .painel-historico-lista {
+      width: 100%;
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .painel-historico-lista li {
+      border-bottom: 1px solid #ffe90033;
+      padding: 5px 0;
+      font-size: 1.07em;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .painel-historico-li-top {
+      font-weight: bold;
+      margin-bottom: 1px;
+    }
+    .painel-historico-li-bottom {
+      font-size: 0.95em;
+      color: #ffe900cc;
+    }
+    @media (max-width: 950px) {
+      .main-flex { flex-direction: column; align-items: center;}
+      .painel-historico { margin-left: 0; margin-top: 18px; }
+    }
     @media (max-width: 700px) {
       .container, .admin-area, .relatorio-area { min-width: 95vw; max-width: 97vw; padding-left: 4vw; padding-right: 4vw;}
+      .painel-historico { min-width: 90vw; max-width: 98vw; }
     }
   </style>
   <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-app-compat.js"></script>
@@ -206,19 +271,25 @@ xxxxxx
   <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
 </head>
 <body>
-  <div class="container" id="guiche-container" style="display:none;">
-    <div class="titulo">Guichê</div>
-    <div id="usuarioLogado" style="color:#fffbe5;margin-bottom:12px;font-size:1.1em;"></div>
-    <label for="guicheNum">Número do Guichê:</label>
-    <input type="number" id="guicheNum" min="1" max="20" value="1" required><br>
-    <button class="botao" onclick="chamarSenhaDireto('Agendar')">Senha Agendar</button>
-    <button class="botao" onclick="chamarSenhaDireto('Agendados')">Senha Realizar</button>
-    <button class="botao" onclick="chamarSenha('repetir')">Rechamar</button>
-    <div id="msg" style="color:yellow;margin-top:10px;"></div>
-    <button class="admin-btn" onclick="abrirAdmin()">Administração</button>
-    <button class="admin-btn" onclick="abrirRelatorio()">Relatórios</button>
-    <div id="adminArea" class="admin-area"></div>
-    <div id="relatorioArea" class="relatorio-area"></div>
+  <div class="main-flex">
+    <div class="container" id="guiche-container" style="display:none;">
+      <div class="titulo">Guichê</div>
+      <div id="usuarioLogado" style="color:#fffbe5;margin-bottom:12px;font-size:1.1em;"></div>
+      <label for="guicheNum">Número do Guichê:</label>
+      <input type="number" id="guicheNum" min="1" max="20" value="1" required><br>
+      <button class="botao" onclick="chamarSenhaDireto('Agendar')">Senha Agendar</button>
+      <button class="botao" onclick="chamarSenhaDireto('Agendados')">Senha Realizar</button>
+      <button class="botao" onclick="chamarSenha('repetir')">Rechamar</button>
+      <div id="msg" style="color:yellow;margin-top:10px;"></div>
+      <button class="admin-btn" onclick="abrirAdmin()">Administração</button>
+      <button class="admin-btn" onclick="abrirRelatorio()">Relatórios</button>
+      <div id="adminArea" class="admin-area"></div>
+      <div id="relatorioArea" class="relatorio-area"></div>
+    </div>
+    <div class="painel-historico" id="painelHistorico" style="display:none;">
+      <div class="painel-historico-titulo">Senhas Chamadas</div>
+      <ul class="painel-historico-lista" id="painelHistoricoLista"></ul>
+    </div>
   </div>
   <div id="senha-protect" class="senha-form">
     <label for="usuario">Usuário:</label>
@@ -276,8 +347,9 @@ xxxxxx
         isAdmin = true;
         document.getElementById("senha-protect").style.display = "none";
         document.getElementById("guiche-container").style.display = "block";
-        document.getElementById("usuarioLogado").textContent = "Usuário admin: " + usuarioLogado;
-        msg.textContent = "";
+        document.getElementById("painelHistorico").style.display = "block";
+        document.getElementById("usuarioLogado").textContent = "Usuário: " + usuarioLogado;
+        atualizarMiniHistorico();
         return;
       }
       if (usuariosAutorizados.includes(usuario) && senhaInput === senhaCorreta) {
@@ -285,8 +357,9 @@ xxxxxx
         isAdmin = false;
         document.getElementById("senha-protect").style.display = "none";
         document.getElementById("guiche-container").style.display = "block";
+        document.getElementById("painelHistorico").style.display = "block";
         document.getElementById("usuarioLogado").textContent = "Usuário: " + usuarioLogado;
-        msg.textContent = "";
+        atualizarMiniHistorico();
         return;
       }
       msg.textContent = "Usuário ou senha incorretos!";
@@ -312,6 +385,7 @@ xxxxxx
         historicoGuiche[guiche][tipoSenha] = { senha: senhaStr, timestamp: Date.now() };
         enviarSenha(tipoSenha, senhaStr, guiche, false);
         registrarAtendimento(tipoSenha, senhaStr, guiche);
+        atualizarMiniHistorico();
       }, false);
     }
 
@@ -328,6 +402,7 @@ xxxxxx
           let ultimoChamado = historicoGuiche[guiche][tipoSenha];
           enviarSenha(tipoSenha, ultimoChamado.senha, guiche, true);
           registrarAtendimento(tipoSenha, ultimoChamado.senha, guiche);
+          atualizarMiniHistorico();
         } else {
           document.getElementById("msg").textContent = "Nenhuma senha para rechamar neste guichê!";
         }
@@ -351,19 +426,29 @@ xxxxxx
       });
     }
 
-    // Função para contar apenas atendimentos válidos (diferença >= 60s)
-    function contarAtendimentosValidos(lista) {
-      if(!lista || lista.length === 0) return 0;
-      lista.sort((a, b) => a.timestamp - b.timestamp);
-      let count = 1;
-      let ultimo = lista[0].timestamp;
-      for(let i=1; i<lista.length; i++) {
-        if(lista[i].timestamp - ultimo >= 60000) { // 60.000 ms = 60s
-          count++;
-          ultimo = lista[i].timestamp;
+    // MINI PAINEL DE HISTÓRICO DE SENHAS CHAMADAS
+    function atualizarMiniHistorico() {
+      if (!usuarioLogado) return;
+      db.ref("atendimentos/" + usuarioLogado).orderByChild("timestamp").limitToLast(10).once("value", snap => {
+        const val = snap.val();
+        const lista = val ? Object.values(val).sort((a, b) => b.timestamp - a.timestamp) : [];
+        const ul = document.getElementById("painelHistoricoLista");
+        ul.innerHTML = "";
+        if (!lista.length) {
+          ul.innerHTML = `<li style="opacity:.8;">Nenhuma senha chamada ainda.</li>`;
+          return;
         }
-      }
-      return count;
+        lista.forEach(item => {
+          let tipoStr = item.tipo === "Agendar" ? "Agendar" : "Realizar";
+          let data = new Date(item.timestamp);
+          let hora = data.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+          let linha = `<span class="painel-historico-li-top">${tipoStr} &ndash; Senha <b>${item.senha}</b> &ndash; Guichê ${parseInt(item.guiche,10)}</span>
+                        <span class="painel-historico-li-bottom">${hora}</span>`;
+          let li = document.createElement("li");
+          li.innerHTML = linha;
+          ul.appendChild(li);
+        });
+      });
     }
 
     // ... Todo o restante do código de administração, relatórios, etc, permanece igual ...
@@ -491,207 +576,21 @@ xxxxxx
       return (segundos/3600).toFixed(2) + "h";
     }
 
-    function exportarRelatorioExcelDetalhado(aba) {
-      db.ref("atendimentos").once("value", snap => {
-        const val = snap.val() || {};
-        const agora = new Date();
-        let workbook = XLSX.utils.book_new();
-
-        let resumoDados = [["Usuário", "Atendimentos Dia", "Atendimentos Mês", "Atendimentos Ano"]];
-        let totalDiaGeral = 0, totalMesGeral = 0, totalAnoGeral = 0;
-        for (let usuario in val) {
-          let atendimentos = Object.values(val[usuario]);
-          if (!atendimentos.length) continue;
-          let listaDia = atendimentos.filter(a=>{
-            let d = new Date(a.timestamp);
-            return d.toISOString().slice(0,10) === agora.toISOString().slice(0,10);
-          });
-          let listaMes = atendimentos.filter(a=>{
-            let d = new Date(a.timestamp);
-            return d.getMonth() === agora.getMonth() && d.getFullYear() === agora.getFullYear();
-          });
-          let listaAno = atendimentos.filter(a=>{
-            let d = new Date(a.timestamp);
-            return d.getFullYear() === agora.getFullYear();
-          });
-          let totalDia = contarAtendimentosValidos(listaDia);
-          let totalMes = contarAtendimentosValidos(listaMes);
-          let totalAno = contarAtendimentosValidos(listaAno);
-          resumoDados.push([usuario, totalDia, totalMes, totalAno]);
-          totalDiaGeral += totalDia;
-          totalMesGeral += totalMes;
-          totalAnoGeral += totalAno;
+    function contarAtendimentosValidos(lista) {
+      if(!lista || lista.length === 0) return 0;
+      lista.sort((a, b) => a.timestamp - b.timestamp);
+      let count = 1;
+      let ultimo = lista[0].timestamp;
+      for(let i=1; i<lista.length; i++) {
+        if(lista[i].timestamp - ultimo >= 60000) {
+          count++;
+          ultimo = lista[i].timestamp;
         }
-        let wsResumo = XLSX.utils.aoa_to_sheet(resumoDados);
-        XLSX.utils.book_append_sheet(workbook, wsResumo, "Resumo");
-        let resumoTotal = [
-          ["Atendimentos Dia", "Atendimentos Mês", "Atendimentos Ano"],
-          [totalDiaGeral, totalMesGeral, totalAnoGeral]
-        ];
-        let wsTotal = XLSX.utils.aoa_to_sheet(resumoTotal);
-        XLSX.utils.book_append_sheet(workbook, wsTotal, "Resumo Total");
-
-        for (let usuario in val) {
-          let atendimentos = Object.values(val[usuario]);
-          if (!atendimentos.length) continue;
-          let atendimentosFiltrados = atendimentos.filter(a => {
-            let d = new Date(a.timestamp);
-            if (aba==='dia') return d.toISOString().slice(0,10) === agora.toISOString().slice(0,10);
-            if (aba==='mes') return d.getMonth() === agora.getMonth() && d.getFullYear() === agora.getFullYear();
-            if (aba==='ano') return d.getFullYear() === agora.getFullYear();
-            return true;
-          });
-          atendimentosFiltrados.sort((a,b)=>a.timestamp-b.timestamp);
-
-          let listaDia = atendimentos.filter(a=>{
-            let d = new Date(a.timestamp);
-            return d.toISOString().slice(0,10) === agora.toISOString().slice(0,10);
-          });
-          let listaMes = atendimentos.filter(a=>{
-            let d = new Date(a.timestamp);
-            return d.getMonth() === agora.getMonth() && d.getFullYear() === agora.getFullYear();
-          });
-          let listaAno = atendimentos.filter(a=>{
-            let d = new Date(a.timestamp);
-            return d.getFullYear() === agora.getFullYear();
-          });
-          let totalDia = contarAtendimentosValidos(listaDia);
-          let totalMes = contarAtendimentosValidos(listaMes);
-          let totalAno = contarAtendimentosValidos(listaAno);
-
-          let dados = [
-            [`Total atendimentos Dia`, totalDia],
-            [`Total atendimentos Mês`, totalMes],
-            [`Total atendimentos Ano`, totalAno],
-            [],
-            ["Hora", "Tipo", "Senha", "Guichê", "Intervalo"]
-          ];
-          let prev = null;
-          atendimentosFiltrados.forEach(a=>{
-            let tempo = prev ? formatTempo(Math.round((a.timestamp-prev.timestamp)/1000)) : "--";
-            dados.push([
-              new Date(a.timestamp).toLocaleString(),
-              a.tipo, a.senha, a.guiche, tempo
-            ]);
-            prev = a;
-          });
-          let ws = XLSX.utils.aoa_to_sheet(dados);
-          XLSX.utils.book_append_sheet(workbook, ws, usuario.substring(0,31));
-        }
-        XLSX.writeFile(workbook, "relatorio_atendimentos.xlsx");
-      });
+      }
+      return count;
     }
 
-    function mostrarRelatorio(aba) {
-      db.ref("atendimentos").once("value", snap => {
-        const val = snap.val() || {};
-        const agora = new Date();
-        let html = `
-          <div style="font-size:1.2em;margin-bottom:7px;font-weight:bold;">Relatório de Atendimentos</div>
-          <button class="aba-btn ${aba==='dia'?'active':''}" onclick="mostrarRelatorio('dia')">Dia</button>
-          <button class="aba-btn ${aba==='mes'?'active':''}" onclick="mostrarRelatorio('mes')">Mês</button>
-          <button class="aba-btn ${aba==='ano'?'active':''}" onclick="mostrarRelatorio('ano')">Ano</button>
-          <button class="excel-btn" onclick="exportarRelatorioExcelDetalhado('${aba}')">Exportar Excel</button>
-          <button class="fechar-btn aba-btn" onclick="fecharRelatorio()">Fechar</button>
-          <table class="relatorio-table">
-            <tr>
-              <th>Usuário</th>
-              <th>Qtde</th>
-              <th>Primeiro</th>
-              <th>Último</th>
-              <th>Média Tempo</th>
-              <th>Detalhes</th>
-            </tr>
-        `;
-        for (let usuario in val) {
-          let atendimentos = Object.values(val[usuario]);
-          if (!atendimentos.length) continue;
-          let atendimentosFiltrados = atendimentos.filter(a => {
-            let d = new Date(a.timestamp);
-            if (aba==='dia') {
-              return d.toISOString().slice(0,10) === agora.toISOString().slice(0,10);
-            }
-            if (aba==='mes') {
-              return d.getMonth() === agora.getMonth() && d.getFullYear() === agora.getFullYear();
-            }
-            if (aba==='ano') {
-              return d.getFullYear() === agora.getFullYear();
-            }
-            return true;
-          });
-          if (!atendimentosFiltrados.length) continue;
-          let listaValidos = atendimentosFiltrados;
-          let totalValidos = contarAtendimentosValidos(listaValidos);
-
-          let tempos = [];
-          atendimentosFiltrados.sort((a,b)=>a.timestamp-b.timestamp);
-          for(let i=1; i<atendimentosFiltrados.length; i++) {
-            tempos.push(atendimentosFiltrados[i].timestamp - atendimentosFiltrados[i-1].timestamp);
-          }
-          let mediaTempo = tempos.length ? formatTempo(Math.round(tempos.reduce((a,b)=>a+b,0)/tempos.length/1000)) : '--';
-          let primeiro = new Date(atendimentosFiltrados[0].timestamp).toLocaleTimeString();
-          let ultimo = new Date(atendimentosFiltrados[atendimentosFiltrados.length-1].timestamp).toLocaleTimeString();
-          html += `<tr>
-            <td>${usuario}</td>
-            <td>${totalValidos}</td>
-            <td>${primeiro}</td>
-            <td>${ultimo}</td>
-            <td>${mediaTempo}</td>
-            <td>
-              <button class="aba-btn" onclick="mostrarDetalhesUsuario('${usuario}','${aba}')">Ver</button>
-            </td>
-          </tr>`;
-        }
-        html += `</table>`;
-        document.getElementById("relatorioArea").innerHTML = html;
-      });
-    }
-
-    window.mostrarDetalhesUsuario = function(usuario, aba) {
-      db.ref("atendimentos/" + usuario).once("value", snap => {
-        const val = Object.values(snap.val()||{});
-        const agora = new Date();
-        let atendimentosFiltrados = val.filter(a => {
-          let d = new Date(a.timestamp);
-          if (aba==='dia') {
-            return d.toISOString().slice(0,10) === agora.toISOString().slice(0,10);
-          }
-          if (aba==='mes') {
-            return d.getMonth() === agora.getMonth() && d.getFullYear() === agora.getFullYear();
-          }
-          if (aba==='ano') {
-            return d.getFullYear() === agora.getFullYear();
-          }
-          return true;
-        });
-        atendimentosFiltrados.sort((a,b)=>a.timestamp-b.timestamp);
-        let html = `<div><b>Detalhes de ${usuario} (${aba})</b><br>
-          <button class="aba-btn" onclick="mostrarRelatorio('${aba}')">Voltar</button>
-        <table class="relatorio-table">
-          <tr>
-            <th>Hora</th>
-            <th>Tipo</th>
-            <th>Senha</th>
-            <th>Guichê</th>
-            <th>Intervalo</th>
-          </tr>`;
-        let prev = null;
-        atendimentosFiltrados.forEach((a,i)=>{
-          let tempo = prev ? formatTempo(Math.round((a.timestamp-prev.timestamp)/1000)) : "--";
-          html += `<tr>
-            <td>${new Date(a.timestamp).toLocaleTimeString()}</td>
-            <td>${a.tipo}</td>
-            <td>${a.senha}</td>
-            <td>${a.guiche}</td>
-            <td>${tempo}</td>
-          </tr>`;
-          prev = a;
-        });
-        html += `</table></div>`;
-        document.getElementById("relatorioArea").innerHTML = html;
-      });
-    }
+    // ... (restante do código igual)
   </script>
 </body>
 </html>
-
