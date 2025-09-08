@@ -1,11 +1,9 @@
-aaaaaaaaaaaaaaaaaaaaaaaa
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
   <title>Guichê - Painel de Senhas</title>
   <style>
-    /* ... todo seu CSS igual ... */
     :root {
       --verde-hcpa: #276e5b;
       --amarelo-hcpa: #ffe900;
@@ -246,7 +244,7 @@ aaaaaaaaaaaaaaaaaaaaaaaa
     let usuarioLogado = null;
     let isAdmin = false;
 
-    // NOVO BLOCO FIREBASE ABAIXO
+    // BLOCO FIREBASE CORRETO
     const firebaseConfig = {
       apiKey: "AIzaSyB-wxIiE1o4SlwhIAowvzDoP2MTCwHeUA8",
       authDomain: "senha-teste-3792a.firebaseapp.com",
@@ -260,7 +258,6 @@ aaaaaaaaaaaaaaaaaaaaaaaa
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // ... todo o restante do seu código permanece igual ...
     db.ref("usuariosAutorizados").on("value", snap => {
       usuariosAutorizados = snap.val() || [];
     });
@@ -269,8 +266,7 @@ aaaaaaaaaaaaaaaaaaaaaaaa
       Agendar: 0,
       Agendados: 0
     };
-    // Histórico por guichê e tipo
-    let historicoGuiche = {}; // { guiche: {tipo: {senha, timestamp}} }
+    let historicoGuiche = {};
 
     db.ref("contadoresSenha").once("value", snap => {
       const val = snap.val();
@@ -336,13 +332,11 @@ aaaaaaaaaaaaaaaaaaaaaaaa
       db.ref("atendimentos/" + usuarioLogado).push(registro);
     }
 
-    // Função corrigida com transação para garantir senha única por tipo
     function chamarSenha(tipoChamada) {
       let guiche = document.getElementById('guicheNum').value.padStart(2, '0');
       let tipoSenha = document.getElementById('tipoSenha').value;
       historicoGuiche[guiche] = historicoGuiche[guiche] || {};
 
-      // Rechamar: só pode rechamar a senha que ESTE guichê chamou deste tipo
       if (tipoChamada === 'repetir') {
         let ultimoChamado = historicoGuiche[guiche][tipoSenha];
         if (ultimoChamado) {
@@ -354,15 +348,12 @@ aaaaaaaaaaaaaaaaaaaaaaaa
         return;
       }
 
-      // Chamada normal: transação
       db.ref("contadoresSenha/" + tipoSenha).transaction(function (currentValue) {
         if (currentValue === null || isNaN(currentValue)) currentValue = 0;
         let senhaStr = String(currentValue).padStart(3, '0');
-        // Salva no histórico do guichê
         historicoGuiche[guiche][tipoSenha] = { senha: senhaStr, timestamp: Date.now() };
         enviarSenha(tipoSenha, senhaStr, guiche, false);
         registrarAtendimento(tipoSenha, senhaStr, guiche);
-        // Retorna novo valor para salvar
         return (currentValue + 1) % 1000;
       });
     }
@@ -373,6 +364,12 @@ aaaaaaaaaaaaaaaaaaaaaaaa
         tipo,
         senha,
         guiche
+      });
+      db.ref("historicoChamadas").once("value", snap=>{
+        let lista = snap.val() || [];
+        lista.push({tipo, senha, guiche, timestamp: Date.now()});
+        if(lista.length>10) lista = lista.slice(-10);
+        db.ref("historicoChamadas").set(lista);
       });
     }
 
@@ -467,14 +464,12 @@ aaaaaaaaaaaaaaaaaaaaaaaa
       return (segundos/3600).toFixed(2) + "h";
     }
 
-    // Exportação Excel com abas (SheetJS) e totais Dia/Mês/Ano + RESUMO GERAL
     function exportarRelatorioExcelDetalhado(aba) {
       db.ref("atendimentos").once("value", snap => {
         const val = snap.val() || {};
         const agora = new Date();
         let workbook = XLSX.utils.book_new();
 
-        // Resumo para todos usuários - nova aba
         let resumoDados = [["Usuário", "Atendimentos Dia", "Atendimentos Mês", "Atendimentos Ano"]];
         let totalDiaGeral = 0, totalMesGeral = 0, totalAnoGeral = 0;
         for (let usuario in val) {
@@ -499,8 +494,6 @@ aaaaaaaaaaaaaaaaaaaaaaaa
         }
         let wsResumo = XLSX.utils.aoa_to_sheet(resumoDados);
         XLSX.utils.book_append_sheet(workbook, wsResumo, "Resumo");
-
-        // Resumo TOTAL - nova aba
         let resumoTotal = [
           ["Atendimentos Dia", "Atendimentos Mês", "Atendimentos Ano"],
           [totalDiaGeral, totalMesGeral, totalAnoGeral]
@@ -508,11 +501,9 @@ aaaaaaaaaaaaaaaaaaaaaaaa
         let wsTotal = XLSX.utils.aoa_to_sheet(resumoTotal);
         XLSX.utils.book_append_sheet(workbook, wsTotal, "Resumo Total");
 
-        // Abas detalhadas por usuário
         for (let usuario in val) {
           let atendimentos = Object.values(val[usuario]);
           if (!atendimentos.length) continue;
-
           let atendimentosFiltrados = atendimentos.filter(a => {
             let d = new Date(a.timestamp);
             if (aba==='dia') return d.toISOString().slice(0,10) === agora.toISOString().slice(0,10);
@@ -534,7 +525,6 @@ aaaaaaaaaaaaaaaaaaaaaaaa
             let d = new Date(a.timestamp);
             return d.getFullYear() === agora.getFullYear();
           }).length;
-
           let dados = [
             [`Total atendimentos Dia`, totalDia],
             [`Total atendimentos Mês`, totalMes],
@@ -664,7 +654,6 @@ aaaaaaaaaaaaaaaaaaaaaaaa
         document.getElementById("relatorioArea").innerHTML = html;
       });
     }
-
   </script>
 </body>
 </html>
