@@ -350,6 +350,21 @@
       });
     }
 
+    // Função para contar apenas atendimentos válidos (diferença >= 60s)
+    function contarAtendimentosValidos(lista) {
+      if(!lista || lista.length === 0) return 0;
+      lista.sort((a, b) => a.timestamp - b.timestamp);
+      let count = 1;
+      let ultimo = lista[0].timestamp;
+      for(let i=1; i<lista.length; i++) {
+        if(lista[i].timestamp - ultimo >= 60000) { // 60.000 ms = 60s
+          count++;
+          ultimo = lista[i].timestamp;
+        }
+      }
+      return count;
+    }
+
     // ... Todo o restante do código de administração, relatórios, etc, permanece igual ...
     function adicionarUsuarioAutorizado() {
       const novoUsuario = document.getElementById("novoUsuario").value.trim();
@@ -486,18 +501,21 @@
         for (let usuario in val) {
           let atendimentos = Object.values(val[usuario]);
           if (!atendimentos.length) continue;
-          let totalDia = atendimentos.filter(a=>{
+          let listaDia = atendimentos.filter(a=>{
             let d = new Date(a.timestamp);
             return d.toISOString().slice(0,10) === agora.toISOString().slice(0,10);
-          }).length;
-          let totalMes = atendimentos.filter(a=>{
+          });
+          let listaMes = atendimentos.filter(a=>{
             let d = new Date(a.timestamp);
             return d.getMonth() === agora.getMonth() && d.getFullYear() === agora.getFullYear();
-          }).length;
-          let totalAno = atendimentos.filter(a=>{
+          });
+          let listaAno = atendimentos.filter(a=>{
             let d = new Date(a.timestamp);
             return d.getFullYear() === agora.getFullYear();
-          }).length;
+          });
+          let totalDia = contarAtendimentosValidos(listaDia);
+          let totalMes = contarAtendimentosValidos(listaMes);
+          let totalAno = contarAtendimentosValidos(listaAno);
           resumoDados.push([usuario, totalDia, totalMes, totalAno]);
           totalDiaGeral += totalDia;
           totalMesGeral += totalMes;
@@ -524,18 +542,22 @@
           });
           atendimentosFiltrados.sort((a,b)=>a.timestamp-b.timestamp);
 
-          let totalDia = atendimentos.filter(a=>{
+          let listaDia = atendimentos.filter(a=>{
             let d = new Date(a.timestamp);
             return d.toISOString().slice(0,10) === agora.toISOString().slice(0,10);
-          }).length;
-          let totalMes = atendimentos.filter(a=>{
+          });
+          let listaMes = atendimentos.filter(a=>{
             let d = new Date(a.timestamp);
             return d.getMonth() === agora.getMonth() && d.getFullYear() === agora.getFullYear();
-          }).length;
-          let totalAno = atendimentos.filter(a=>{
+          });
+          let listaAno = atendimentos.filter(a=>{
             let d = new Date(a.timestamp);
             return d.getFullYear() === agora.getFullYear();
-          }).length;
+          });
+          let totalDia = contarAtendimentosValidos(listaDia);
+          let totalMes = contarAtendimentosValidos(listaMes);
+          let totalAno = contarAtendimentosValidos(listaAno);
+
           let dados = [
             [`Total atendimentos Dia`, totalDia],
             [`Total atendimentos Mês`, totalMes],
@@ -597,6 +619,9 @@
             return true;
           });
           if (!atendimentosFiltrados.length) continue;
+          let listaValidos = atendimentosFiltrados;
+          let totalValidos = contarAtendimentosValidos(listaValidos);
+
           let tempos = [];
           atendimentosFiltrados.sort((a,b)=>a.timestamp-b.timestamp);
           for(let i=1; i<atendimentosFiltrados.length; i++) {
@@ -607,7 +632,7 @@
           let ultimo = new Date(atendimentosFiltrados[atendimentosFiltrados.length-1].timestamp).toLocaleTimeString();
           html += `<tr>
             <td>${usuario}</td>
-            <td>${atendimentosFiltrados.length}</td>
+            <td>${totalValidos}</td>
             <td>${primeiro}</td>
             <td>${ultimo}</td>
             <td>${mediaTempo}</td>
