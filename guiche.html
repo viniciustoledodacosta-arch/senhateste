@@ -1,3 +1,4 @@
+xxxxxxxxxx
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -16,7 +17,7 @@
       font-family: Arial, Helvetica, sans-serif;
       display: flex;
       justify-content: center;
-      align-items: flex-start;
+      align-items: center;
       height: 100vh;
       margin: 0;
     }
@@ -71,143 +72,45 @@
       transition: background 0.2s;
     }
     .botao:hover { background: #fffbe5; }
-    .senha-form { margin-bottom: 22px; }
-    .admin-btn {
-      margin-top: 24px;
-      background: #2196F3;
-      color: #fff;
-      font-weight: bold;
-      border-radius: 8px;
-      padding: 8px 22px;
+    .senha-form {
+      background: var(--preto);
+      border-radius: 18px;
+      box-shadow: 0 0 20px #0004;
+      padding: 38px 38px 28px 38px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 22px;
+      min-width: 350px;
+      max-width: 400px;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+    }
+    .senha-form label { color: var(--amarelo-hcpa); margin-bottom: 0; }
+    .senha-form input[type=text], .senha-form input[type=password] {
+      width: 220px; max-width: 90vw;
+      font-size: 1.17em;
+    }
+    #senha-eye {
+      position: absolute;
+      right: 36px;
+      top: 137px;
+      background: none;
       border: none;
       cursor: pointer;
-      font-size: 1.1em;
-      transition: background 0.2s;
-    }
-    .admin-btn:hover { background: #1565c0; }
-    .admin-area {
-      background: #222;
-      border-radius: 10px;
-      padding: 24px 22px;
-      color: #ffe900;
-      font-size: 1.15em;
-      box-shadow: 0 0 8px #0004;
-      margin-top: 18px;
-      display: none;
-      text-align: left;
-      margin-left: auto;
-      margin-right: auto;
-      max-width: 420px;
-    }
-    .admin-area label {
-      display: block;
-      margin-bottom: 7px;
-      font-weight: bold;
       font-size: 1.2em;
-    }
-    .admin-area input[type="number"] {
-      width: 110px;
-      margin-bottom: 12px;
-      font-size: 1.15em;
-      padding: 5px;
-    }
-    .admin-area .botao {
-      margin-top: 10px;
-      background: #0074d9;
-      color: #fff;
-      font-size: 1.15em;
-    }
-    .admin-area .botao:hover {
-      background: #004b8a;
-    }
-    .admin-area .fechar-btn {
-      background: #ff4040;
-      color: #fff;
-      font-size: 1em;
-      margin-left: 12px;
-    }
-    .admin-area .fechar-btn:hover {
-      background: #a90000;
-    }
-    .admin-area .msg-admin {
-      margin-top: 18px;
-      color: #fffbe5;
-      font-size: 1em;
-      font-weight: bold;
-    }
-    .admin-area .limpar-btn {
-      background: #ff9800;
-      color: #fff;
-      margin-top: 14px;
-      margin-left: 0;
-      font-size: 1.1em;
-      border-radius: 8px;
-      padding: 8px 18px;
-      border: none;
-      cursor: pointer;
-      font-weight: bold;
-      transition: background 0.2s;
-    }
-    .admin-area .limpar-btn:hover {
-      background: #b36a00;
-    }
-    .relatorio-area {
-      background: #222;
-      border-radius: 10px;
-      padding: 22px;
       color: #ffe900;
-      font-size: 1.03em;
-      margin-top: 14px;
-      box-shadow: 0 0 8px #0004;
-      display: none;
-      max-width: 600px;
-      overflow-x: auto;
-      margin-left: auto;
-      margin-right: auto;
-      text-align: left;
+      outline: none;
+      z-index: 2;
     }
-    .relatorio-table th, .relatorio-table td {
-      padding: 7px 11px;
-      border-bottom: 1px solid #ffe90044;
-      text-align: center;
+    @media (max-width: 700px) {
+      .container, .admin-area, .relatorio-area, .senha-form { min-width: 95vw; max-width: 97vw; padding-left: 4vw; padding-right: 4vw;}
+      .painel-historico { min-width: 90vw; max-width: 98vw; }
+      #senha-eye { right: 18px;}
     }
-    .relatorio-table th {
-      background: #276e5b;
-      color: #ffe900;
-      font-weight: bold;
-    }
-    .relatorio-table {
-      border-collapse: collapse;
-      width: 100%;
-      margin-top: 10px;
-    }
-    .aba-btn {
-      background: #276e5b;
-      color: #ffe900;
-      border: none;
-      border-radius: 6px;
-      padding: 8px 16px;
-      cursor: pointer;
-      font-weight: bold;
-      margin-right: 8px;
-      margin-bottom: 9px;
-      transition: background 0.2s;
-    }
-    .aba-btn.active { background: #ffe900; color: #276e5b; }
-    .excel-btn {
-      background: #4caf50;
-      color: #fff;
-      border: none;
-      border-radius: 6px;
-      padding: 8px 18px;
-      cursor: pointer;
-      font-weight: bold;
-      margin-right: 8px;
-      margin-bottom: 9px;
-      font-size: 1em;
-      transition: background 0.2s;
-    }
-    .excel-btn:hover { background: #1b5e20; }
     /* MINI HISTÓRICO */
     .painel-historico {
       background: var(--preto);
@@ -261,21 +164,13 @@
       font-size: 0.95em;
       color: #ffe900cc;
     }
-    @media (max-width: 950px) {
-      .main-flex { flex-direction: column; align-items: center;}
-      .painel-historico { margin-left: 0; margin-top: 18px; }
-    }
-    @media (max-width: 700px) {
-      .container, .admin-area, .relatorio-area { min-width: 95vw; max-width: 97vw; padding-left: 4vw; padding-right: 4vw;}
-      .painel-historico { min-width: 90vw; max-width: 98vw; }
-    }
   </style>
   <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-database-compat.js"></script>
   <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
 </head>
 <body>
-  <div class="main-flex">
+  <div class="main-flex" style="width:100%;">
     <div class="container" id="guiche-container" style="display:none;">
       <div class="titulo">Guichê</div>
       <div id="usuarioLogado" style="color:#fffbe5;margin-bottom:12px;font-size:1.1em;"></div>
@@ -295,16 +190,47 @@
       <ul class="painel-historico-lista" id="painelHistoricoLista"></ul>
     </div>
   </div>
-  <div id="senha-protect" class="senha-form">
+  <form id="form-login" class="senha-form">
     <label for="usuario">Usuário:</label>
-    <input type="text" id="usuario" autofocus>
+    <input type="text" id="usuario" autocomplete="username" autofocus>
     <br>
     <label for="senha">Senha de acesso:</label>
-    <input type="password" id="senha">
-    <button onclick="checarLogin()">Entrar</button>
+    <div style="position:relative;">
+      <input type="password" id="senha" autocomplete="current-password" style="padding-right:32px;">
+      <button id="senha-eye" type="button" tabindex="-1" onclick="toggleSenhaVisivel()" aria-label="Mostrar ou ocultar senha">&#128065;</button>
+    </div>
+    <button type="submit" style="margin-top:12px;">Entrar</button>
     <div id="msgSenha" style="color:red;margin-top:8px;"></div>
-  </div>
+  </form>
   <script>
+    // === LOGIN CENTRALIZADO E COM ENTER + OLHO NA SENHA ===
+    function centralizarLogin() {
+      const form = document.getElementById('form-login');
+      form.style.display = 'flex';
+      form.style.position = 'absolute';
+      form.style.left = '50%';
+      form.style.top = '50%';
+      form.style.transform = 'translate(-50%,-50%)';
+    }
+    centralizarLogin();
+
+    // Enter no login
+    document.getElementById('form-login').addEventListener('submit', function(e){
+      e.preventDefault();
+      checarLogin();
+    });
+
+    // Olhinho senha
+    function toggleSenhaVisivel() {
+      let input = document.getElementById("senha");
+      if(input.type === "password") {
+        input.type = "text";
+      } else {
+        input.type = "password";
+      }
+    }
+
+    // --- CÓDIGO PADRÃO DO SISTEMA ---
     const senhaCorreta = "radiologia2025";
     const usuarioAdmin = "vtcosta";
     const senhaAdmin = "admtoledo";
@@ -349,7 +275,7 @@
       if (usuario === usuarioAdmin && senhaInput === senhaAdmin) {
         usuarioLogado = usuarioAdmin;
         isAdmin = true;
-        document.getElementById("senha-protect").style.display = "none";
+        document.getElementById("form-login").style.display = "none";
         document.getElementById("guiche-container").style.display = "block";
         document.getElementById("painelHistorico").style.display = "block";
         document.getElementById("usuarioLogado").textContent = "Usuário admin: " + usuarioLogado;
@@ -359,7 +285,7 @@
       if (usuariosAutorizados.includes(usuario) && senhaInput === senhaCorreta) {
         usuarioLogado = usuario;
         isAdmin = false;
-        document.getElementById("senha-protect").style.display = "none";
+        document.getElementById("form-login").style.display = "none";
         document.getElementById("guiche-container").style.display = "block";
         document.getElementById("painelHistorico").style.display = "block";
         document.getElementById("usuarioLogado").textContent = "Usuário: " + usuarioLogado;
@@ -436,7 +362,7 @@
       db.ref("atendimentos/" + usuarioLogado).orderByChild("timestamp").limitToLast(6).once("value", snap => {
         const val = snap.val();
         let lista = val ? Object.values(val).sort((a, b) => b.timestamp - a.timestamp) : [];
-        lista = lista.slice(0, 6); // Apenas as últimas 6
+        lista = lista.slice(-6).reverse();
         const ul = document.getElementById("painelHistoricoLista");
         ul.innerHTML = "";
         if (!lista.length) {
