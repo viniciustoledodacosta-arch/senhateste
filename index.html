@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <title>Painel de Senhas - Radiologia HCPA</title>
   <style>
-    /* ... Seu CSS igual ... */
     :root { --verde-hcpa: #25806D; --amarelo-hcpa: #ffe900; --preto: #000; --azul-agendar: #d70000; --vermelho-agendados: #0074d9; --shadow: 0.05em 0.05em 0 var(--preto);}
     html, body { background: var(--verde-hcpa); min-height: 100vh; min-width: 100vw; margin: 0; padding: 0; font-family: Arial Black, Arial, Helvetica, sans-serif; width: 100vw; height: 100vh; overflow: hidden;}
     #painel-main { width: 100vw; height: 100vh; display: flex; flex-direction: column;}
@@ -40,7 +39,6 @@
     .senha-numero.piscando-agendados { animation: pisca-numero-vermelho 0.7s alternate 7; }
     @keyframes pisca-numero-vermelho { 0%{color:#0074d9;}50%{color:#0755db;}100%{color:#0074d9;} }
   </style>
-  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-database-compat.js"></script>
 </head>
@@ -77,7 +75,6 @@
     </div>
   </div>
   <script>
-    // BLOCO FIREBASE CORRETO
     const firebaseConfig = {
       apiKey: "AIzaSyB-wxIiE1o4SlwhIAowvzDoP2MTCwHeUA8",
       authDomain: "senha-teste-3792a.firebaseapp.com",
