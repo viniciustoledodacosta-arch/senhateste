@@ -338,7 +338,9 @@
       db.ref("chamadaSenha").set({
         tipo,
         senha,
-        guiche
+        guiche,
+        repetir: !!repetir, // true para rechamada, false para chamada normal
+        ts: Date.now()      // timestamp para garantir mudança sempre
       });
       db.ref("historicoChamadas").once("value", snap=>{
         let lista = snap.val() || [];
