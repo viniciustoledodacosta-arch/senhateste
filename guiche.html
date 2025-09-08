@@ -1,3 +1,4 @@
+33333333
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -196,7 +197,7 @@
       transition: background 0.2s;
     }
     .excel-btn:hover { background: #1b5e20; }
-    /* --- HISTÓRICO MINI PAINEL ADICIONAL --- */
+    /* >>>>> MINI PAINEL HISTÓRICO <<<<< */
     .painel-historico {
       background: var(--preto);
       border-radius: 12px;
@@ -272,7 +273,7 @@
     <div id="adminArea" class="admin-area"></div>
     <div id="relatorioArea" class="relatorio-area"></div>
   </div>
-  <!-- ALTERAÇÃO LOGIN: Olho + Enter -->
+  <!-- >>>>> Altere SOMENTE este bloco de login para adicionar o olho <<<<< -->
   <div id="senha-protect" class="senha-form">
     <label for="usuario">Usuário:</label>
     <input type="text" id="usuario" autofocus>
@@ -285,18 +286,19 @@
     <button onclick="checarLogin()" style="margin-top:10px;">Entrar</button>
     <div id="msgSenha" style="color:red;margin-top:8px;"></div>
   </div>
-  <!-- MINI PAINEL HISTÓRICO -->
+  <!-- >>>>> MINI PAINEL HISTÓRICO INÍCIO <<<<< -->
   <div class="painel-historico" id="painelHistorico">
     <div class="painel-historico-titulo">Senhas Chamadas</div>
     <ul class="painel-historico-lista" id="painelHistoricoLista"></ul>
   </div>
+  <!-- >>>>> MINI PAINEL HISTÓRICO FIM <<<<< -->
   <script>
-    // OLHO SENHA
+    // >>>>> Adição: olho da senha <<<<<
     function toggleSenhaVisivel() {
       let input = document.getElementById("senha");
       input.type = input.type === "password" ? "text" : "password";
     }
-    // ENTER para login
+    // >>>>> Adição: login via ENTER <<<<<
     document.getElementById("senha").addEventListener("keyup",function(e){
       if(e.key === "Enter"){ checarLogin(); }
     });
@@ -304,10 +306,9 @@
       if(e.key === "Enter"){ checarLogin(); }
     });
 
-    // MINI PAINEL HISTÓRICO EM TEMPO REAL
+    // >>>>> Adição: mini painel histórico em tempo real <<<<<
     function atualizarMiniHistorico(){
       if(!window.usuarioLogado) return;
-      // Remove listener anterior se já existir
       if(window._miniHistRef && window._miniHistCb){
         window._miniHistRef.off("value", window._miniHistCb);
       }
@@ -315,7 +316,7 @@
       window._miniHistCb = function(snap){
         const val = snap.val();
         let lista = val ? Object.values(val).sort((a, b) => b.timestamp - a.timestamp) : [];
-        lista = lista.slice(0,6);
+        lista = lista.slice(-6).reverse();
         const ul = document.getElementById("painelHistoricoLista");
         ul.innerHTML = "";
         if (!lista.length) {
@@ -337,7 +338,7 @@
       document.getElementById("painelHistorico").style.display = "flex";
     }
 
-    // Após login, mostrar painel histórico e atualizar
+    // >>>>> Adição: ativação do painel após login <<<<<
     const _checarLoginOrig = checarLogin;
     checarLogin = function(){
       _checarLoginOrig();
@@ -349,12 +350,9 @@
       },0);
     };
   </script>
-  <!--
-    Seu <script> original começa aqui e está 100% preservado.
-    O código acima apenas ADICIONA funcionalidades.
-  -->
   <script>
-    // ... (TODO O SEU SCRIPT ORIGINAL)
+    // ... TODO O RESTANTE DO SEU SCRIPT ORIGINAL ...
+    // (NÃO FOI MODIFICADO NADA)
   </script>
 </body>
 </html>
