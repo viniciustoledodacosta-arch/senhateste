@@ -10,6 +10,21 @@
       --preto: #000;
       --cinza-texto: #fffbe5;
     }
+    <!-- MINI PAINEL HISTÓRICO -->
+<div class="painel-historico" id="painelHistorico" style="display:none;position:fixed;top:50px;right:40px;z-index:99;">
+  <div class="painel-historico-titulo" style="font-size:1.25em;font-weight:bold;color:#ffe900;margin-bottom:10px;">Senhas Chamadas</div>
+  <ul class="painel-historico-lista" id="painelHistoricoLista" style="width:100%;list-style:none;padding:0;margin:0;max-height:310px;overflow-y:auto;"></ul>
+</div>
+<style>
+.painel-historico{background:#000;border-radius:12px;min-width:220px;max-width:250px;color:#ffe900;padding:18px 12px 12px 18px;font-size:1em;height:370px;display:flex;flex-direction:column;align-items:flex-start;box-shadow:0 0 10px #0007;}
+.painel-historico-titulo{font-size:1.25em;font-weight:bold;color:#ffe900;margin-bottom:12px;text-align:left;width:100%;letter-spacing:0.03em;}
+.painel-historico-lista li{border-bottom:1px solid #ffe90033;padding:5px 0;font-size:1.07em;display:flex;flex-direction:column;align-items:flex-start;word-break:break-word;}
+.painel-historico-li-top{font-weight:bold;margin-bottom:1px;}
+.painel-historico-li-bottom{font-size:0.95em;color:#ffe900cc;}
+@media (max-width: 950px){
+  .painel-historico{position:static;margin: 20px auto;}
+}
+</style>
     body {
       background: var(--verde-hcpa);
       color: var(--amarelo-hcpa);
@@ -690,6 +705,60 @@
         document.getElementById("relatorioArea").innerHTML = html;
       });
     }
+    // Olhinho para mostrar/ocultar senha
+function toggleSenhaVisivel() {
+  let input = document.getElementById("senha");
+  input.type = input.type === "password" ? "text" : "password";
+}
+
+// Enter faz login
+document.getElementById("senha").addEventListener("keyup",function(e){
+  if(e.key === "Enter"){ checarLogin(); }
+});
+document.getElementById("usuario").addEventListener("keyup",function(e){
+  if(e.key === "Enter"){ checarLogin(); }
+});
+
+// Mini painel de histórico de senhas chamadas (últimas 6, em tempo real)
+function atualizarMiniHistorico(){
+  if(!window.usuarioLogado) return;
+  if(window._miniHistRef) window._miniHistRef.off();
+  window._miniHistRef = db.ref("atendimentos/"+window.usuarioLogado).orderByChild("timestamp").limitToLast(6);
+  window._miniHistRef.on("value", snap=>{
+    const val = snap.val();
+    let lista = val ? Object.values(val).sort((a, b) => b.timestamp - a.timestamp) : [];
+    lista = lista.slice(0,6);
+    const ul = document.getElementById("painelHistoricoLista");
+    ul.innerHTML = "";
+    if (!lista.length) {
+      ul.innerHTML = `<li style="opacity:.8;">Nenhuma senha chamada ainda.</li>`;
+      return;
+    }
+    lista.forEach(item => {
+      let tipoStr = item.tipo === "Agendar" ? "Agendar" : "Realizar";
+      let data = new Date(item.timestamp);
+      let hora = data.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+      let linha = `<span class="painel-historico-li-top">${tipoStr} &ndash; Senha <b>${item.senha}</b> &ndash; Guichê ${parseInt(item.guiche,10)}</span>
+                    <span class="painel-historico-li-bottom">${hora}</span>`;
+      let li = document.createElement("li");
+      li.innerHTML = linha;
+      ul.appendChild(li);
+    });
+  });
+}
+
+// Após login, mostrar o painel histórico e atualizar
+const _checarLoginOrig = checarLogin;
+checarLogin = function(){
+  _checarLoginOrig();
+  setTimeout(()=>{
+    if(window.usuarioLogado){
+      document.getElementById("painelHistorico").style.display = "block";
+      atualizarMiniHistorico();
+    }
+  },0);
+};
   </script>
 </body>
 </html>
+
