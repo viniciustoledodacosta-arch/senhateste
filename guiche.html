@@ -1,4 +1,5 @@
-v777
+v777..
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -93,6 +94,42 @@ v777
       transition: background 0.2s, filter 0.2s;
     }
     .admin-btn:hover { background: #1f5a48; filter: brightness(1.02); }
+
+    /* área de senhas chamadas (histórico global, exibido ao usuário logado) */
+    .chamadas-area {
+      margin-top: 18px;
+      text-align: left;
+      max-width: 420px;
+      margin-left: auto;
+      margin-right: auto;
+      color: #ffe900;
+    }
+    .chamadas-area .titulo-ch { font-weight: bold; margin-bottom: 8px; }
+    .lista-chamadas {
+      list-style: none;
+      padding: 6px;
+      margin: 0;
+      background: #111;
+      border-radius: 8px;
+      max-height: 200px;
+      overflow-y: auto;
+      box-shadow: inset 0 0 6px #0008;
+    }
+    .lista-chamadas li {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 10px;
+      border-bottom: 1px solid #ffe90022;
+      font-size: 1em;
+      align-items: center;
+      gap: 8px;
+    }
+    .lista-chamadas li:last-child { border-bottom: none; }
+    .lista-chamadas .left { display:flex; flex-direction:column; }
+    .lista-chamadas .senha { font-weight: bold; font-size: 1.05em; color: #fffbe5; }
+    .lista-chamadas .tipo { font-size: 0.9em; opacity: 0.85; color: #ffe900cc; }
+    .lista-chamadas .guiche { font-weight: bold; color: #fffbe5; }
+
     .admin-area {
       background: #222;
       border-radius: 10px;
@@ -218,6 +255,7 @@ v777
     .excel-btn:hover { background: #1b5e20; }
     @media (max-width: 700px) {
       .container, .admin-area, .relatorio-area { min-width: 95vw; max-width: 97vw; padding-left: 4vw; padding-right: 4vw;}
+      .chamadas-area { max-width: 95vw; }
     }
   </style>
   <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-app-compat.js"></script>
@@ -237,9 +275,17 @@ v777
     <div id="msg" style="color:yellow;margin-top:10px;"></div>
     <button class="admin-btn" onclick="abrirAdmin()">Administração</button>
     <button class="admin-btn" onclick="abrirRelatorio()">Relatórios</button>
+
+    <!-- nova área: Senhas Chamadas (histórico global, similar ao painel) -->
+    <div class="chamadas-area" id="chamadasArea" style="display:none;">
+      <div class="titulo-ch">Senhas Chamadas</div>
+      <ul id="listaSenhasChamadas" class="lista-chamadas"></ul>
+    </div>
+
     <div id="adminArea" class="admin-area"></div>
     <div id="relatorioArea" class="relatorio-area"></div>
   </div>
+
   <div id="senha-protect" class="senha-form">
     <label for="usuario">Usuário:</label>
     <input type="text" id="usuario" autofocus>
@@ -249,6 +295,7 @@ v777
     <button onclick="checarLogin()">Entrar</button>
     <div id="msgSenha" style="color:red;margin-top:8px;"></div>
   </div>
+
   <script>
     const senhaCorreta = "radiologia2025";
     const usuarioAdmin = "vtcosta";
@@ -299,6 +346,8 @@ v777
         document.getElementById("guiche-container").style.display = "block";
         document.getElementById("usuarioLogado").textContent = "Usuário admin: " + usuarioLogado;
         msg.textContent = "";
+        // iniciar histórico global
+        iniciarHistoricoChamadas();
         return;
       }
       if (usuariosAutorizados.includes(usuario) && senhaInput === senhaCorreta) {
@@ -308,9 +357,42 @@ v777
         document.getElementById("guiche-container").style.display = "block";
         document.getElementById("usuarioLogado").textContent = "Usuário: " + usuarioLogado;
         msg.textContent = "";
+        // mostrar e iniciar histórico global
+        iniciarHistoricoChamadas();
         return;
       }
       msg.textContent = "Usuário ou senha incorretos!";
+    }
+
+    // Listener global para atualizar a lista de chamadas (últimas 8)
+    let _histChamadasRef = null;
+    function iniciarHistoricoChamadas() {
+      // mostrar área
+      const chamadasArea = document.getElementById("chamadasArea");
+      chamadasArea.style.display = "block";
+
+      if (_histChamadasRef) _histChamadasRef.off();
+      _histChamadasRef = db.ref("historicoChamadas");
+      _histChamadasRef.on("value", snap => {
+        const val = snap.val() || [];
+        // historicoChamadas é um array; converter em array segura
+        let lista = Array.isArray(val) ? val.filter(Boolean) : Object.values(val || {});
+        // pegar últimas 8 e inverter para mostrar do mais recente para o mais antigo
+        lista = lista.slice(-8).reverse();
+        const ul = document.getElementById("listaSenhasChamadas");
+        ul.innerHTML = "";
+        if (!lista.length) {
+          ul.innerHTML = '<li style="opacity:.8;padding:8px">Nenhuma chamada registrada.</li>';
+          return;
+        }
+        lista.forEach(item => {
+          // item pode ser {tipo, senha, guiche, timestamp}
+          const li = document.createElement("li");
+          const tipoLabel = item.tipo === "Agendar" ? "Agendar" : (item.tipo === "Agendados" ? "Realizar" : item.tipo || "");
+          li.innerHTML = `<div class="left"><span class="senha">${item.senha}</span><span class="tipo">${tipoLabel}</span></div><div class="guiche">Guichê ${parseInt(item.guiche||0,10)}</div>`;
+          ul.appendChild(li);
+        });
+      });
     }
 
     function chamarSenhaDireto(tipoSenha) {
@@ -397,8 +479,10 @@ v777
       // atualiza histórico global
       db.ref("historicoChamadas").once("value", snap=>{
         let lista = snap.val() || [];
+        // garantir que lista seja array
+        if (!Array.isArray(lista)) lista = Object.values(lista || {});
         lista.push({tipo, senha, guiche, timestamp: Date.now()});
-        if(lista.length>10) lista = lista.slice(-10);
+        if(lista.length>100) lista = lista.slice(-100); // manter tamanho razoável
         db.ref("historicoChamadas").set(lista);
       });
       // atualiza último por guichê (para persistência)
@@ -562,7 +646,7 @@ v777
       if(e.key === "Enter"){ checarLogin(); }
     });
 
-    // Mini painel de histórico de senhas chamadas (últimas 6, em tempo real)
+    // Mini painel de histórico de senhas chamadas (últimas 6, em tempo real) - permanece igual
     function atualizarMiniHistorico(){
       if(!window.usuarioLogado) return;
       if(window._miniHistRef) window._miniHistRef.off();
@@ -602,6 +686,7 @@ v777
       },0);
     };
   </script>
+
     <!-- MINI PAINEL HISTÓRICO -->
 <div class="painel-historico" id="painelHistorico" style="display:none;position:fixed;top:50px;right:40px;z-index:99;">
   <div class="painel-historico-titulo" style="font-size:1.25em;font-weight:bold;color:#ffe900;margin-bottom:10px;">Senhas Chamadas</div>
