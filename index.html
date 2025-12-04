@@ -1,3 +1,4 @@
+z
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -32,7 +33,8 @@
     /* grid com 2 colunas garantido centralização em ambos os lados */
     .historico-lista li { display: grid; grid-template-columns: 1fr 1fr; align-items: center; justify-items: center; padding: 1.1vh 1.6vw; border-bottom: 1px solid #ffe90055; font-size: clamp(1.05rem, 2.8vh, 1.8vw); background: var(--verde-hcpa); color: var(--amarelo-hcpa); letter-spacing: 0.04em; }
     .historico-lista li .senha { font-weight: 900; color: #ffe900; font-size: clamp(1.6rem, 4.2vh, 2.6vw); line-height: 1; }
-    .historico-lista li .guiche { opacity: 0.95; font-size: clamp(1.05rem, 2.6vh, 1.6vw); font-weight:700; }
+    /* ajuste: manter guichê com mesma fonte da senha */
+    .historico-lista li .guiche { opacity: 0.95; font-size: clamp(1.6rem, 4.2vh, 2.6vw); font-weight: 900; }
     /* faixa inferior */
     .faixa-inferior { width: 100vw; position: fixed; left: 0; bottom: 0; z-index: 10;}
     .faixa-inferior-top { width: 100vw; height: 0.5vw; background: var(--amarelo-hcpa);}
@@ -53,7 +55,7 @@
       .historico-header .header-line:first-child { font-size: clamp(1.4rem, 3.8vh, 2.6vw); }
       .historico-header .header-line:last-child { font-size: clamp(1.2rem, 3.2vh, 1.9vw); }
       .historico-lista li .senha { font-size: clamp(2rem, 5.5vh, 3.4vw); }
-      .historico-lista li .guiche { font-size: clamp(1.2rem, 3.4vh, 2.2vw); }
+      .historico-lista li .guiche { font-size: clamp(2rem, 5.5vh, 3.4vw); }
     }
   </style>
   <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-app-compat.js"></script>
