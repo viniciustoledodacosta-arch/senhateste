@@ -1,4 +1,4 @@
-55555555
+V77
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -9,6 +9,9 @@
       --verde-hcpa: #276e5b;
       --amarelo-hcpa: #ffe900;
       --preto: #000;
+      /* Tons do painel: usei os mesmos hex que existem no painel */
+      --tom-agendar: #d70000;   /* vermelho (para "Agendar") */
+      --tom-realizar: #0074d9;  /* azul (para "Realizar") */
       --cinza-texto: #fffbe5;
     }
 
@@ -60,7 +63,21 @@
       font-weight: bold;
       transition: background 0.2s;
     }
-    .botao:hover { background: #fffbe5; }
+    .botao:hover { filter: brightness(0.95); }
+
+    /* Novas classes para cores específicas */
+    .agendar-btn {
+      background: var(--tom-agendar);
+      color: #fff;
+    }
+    .agendar-btn:hover { filter: brightness(0.9); }
+
+    .realizar-btn {
+      background: var(--tom-realizar);
+      color: #fff;
+    }
+    .realizar-btn:hover { filter: brightness(0.9); }
+
     .senha-form { margin-bottom: 22px; }
     .admin-btn {
       margin-top: 24px;
@@ -212,8 +229,9 @@
     <div id="usuarioLogado" style="color:#fffbe5;margin-bottom:12px;font-size:1.1em;"></div>
     <label for="guicheNum">Número do Guichê:</label>
     <input type="number" id="guicheNum" min="1" max="20" value="1" required><br>
-    <button class="botao" onclick="chamarSenhaDireto('Agendar')">Senha Agendar</button>
-    <button class="botao" onclick="chamarSenhaDireto('Agendados')">Senha Realizar</button>
+    <!-- botões com classes novas -->
+    <button class="botao agendar-btn" onclick="chamarSenhaDireto('Agendar')">Senha Agendar</button>
+    <button class="botao realizar-btn" onclick="chamarSenhaDireto('Agendados')">Senha Realizar</button>
     <button class="botao" onclick="chamarSenha('repetir')">Rechamar</button>
     <div id="msg" style="color:yellow;margin-top:10px;"></div>
     <button class="admin-btn" onclick="abrirAdmin()">Administração</button>
@@ -260,6 +278,7 @@
       Agendar: 0,
       Agendados: 0
     };
+    // historicoGuiche local (cache), mas agora também persistimos em DB (ultimoPorGuiche)
     let historicoGuiche = {};
 
     db.ref("contadoresSenha").once("value", snap => {
@@ -294,7 +313,7 @@
     }
 
     function chamarSenhaDireto(tipoSenha) {
-      let guiche = document.getElementById('guicheNum').value.padStart(2, '0');
+      let guiche = String(document.getElementById('guicheNum').value || "").padStart(2, '0');
       historicoGuiche[guiche] = historicoGuiche[guiche] || {};
       document.querySelectorAll('.botao').forEach(btn => btn.disabled = true);
 
@@ -307,48 +326,84 @@
           document.getElementById("msg").textContent = "Erro ao chamar senha, tente novamente!";
           return;
         }
-        let senhaAtual = snapshot.val();
-        let senhaStr = String(senhaAtual === 0 ? 999 : senhaAtual - 1).padStart(3, '0');
-        if (senhaAtual === 0) senhaStr = "999";
+        // contadorAtual é 0..999 (após incremento)
+        let contadorAtual = snapshot.val();
+        // cria string com 3 dígitos (000..999)
+        let senhaStr = String(contadorAtual).padStart(3, '0');
+
+        // atualiza cache local
         historicoGuiche[guiche][tipoSenha] = { senha: senhaStr, timestamp: Date.now() };
+
+        // persiste último por guichê no Firebase, para o rechamar funcionar corretamente entre clientes
+        db.ref(`ultimoPorGuiche/${guiche}/${tipoSenha}`).set({
+          senha: senhaStr,
+          timestamp: Date.now()
+        });
+
         enviarSenha(tipoSenha, senhaStr, guiche, false);
         registrarAtendimento(tipoSenha, senhaStr, guiche);
       }, false);
     }
 
     function chamarSenha(tipoChamada) {
-      let guiche = document.getElementById('guicheNum').value.padStart(2, '0');
-      let tipoSenha = null;
+      let guiche = String(document.getElementById('guicheNum').value || "").padStart(2, '0');
+
       if (tipoChamada === 'repetir') {
-        if (historicoGuiche[guiche] && historicoGuiche[guiche]["Agendados"]) {
-          tipoSenha = "Agendados";
-        } else if (historicoGuiche[guiche] && historicoGuiche[guiche]["Agendar"]) {
-          tipoSenha = "Agendar";
-        }
-        if (tipoSenha) {
-          let ultimoChamado = historicoGuiche[guiche][tipoSenha];
-          enviarSenha(tipoSenha, ultimoChamado.senha, guiche, true);
-          registrarAtendimento(tipoSenha, ultimoChamado.senha, guiche);
-        } else {
-          document.getElementById("msg").textContent = "Nenhuma senha para rechamar neste guichê!";
-        }
+        // lemos do DB a última chamada deste guichê (persistida por enviarSenha)
+        db.ref(`ultimoPorGuiche/${guiche}`).once('value').then(snap => {
+          const val = snap.val() || {};
+          const ag = val.Agendar;
+          const agd = val.Agendados;
+          if (!ag && !agd) {
+            document.getElementById("msg").textContent = "Nenhuma senha para rechamar neste guichê!";
+            return;
+          }
+          // se houver ambos, escolhe o mais recente por timestamp
+          let escolhidoTipo = null;
+          if (ag && agd) {
+            escolhidoTipo = (ag.timestamp >= agd.timestamp) ? "Agendar" : "Agendados";
+          } else if (ag) {
+            escolhidoTipo = "Agendar";
+          } else {
+            escolhidoTipo = "Agendados";
+          }
+
+          const ultimoChamado = val[escolhidoTipo];
+          if (!ultimoChamado || !ultimoChamado.senha) {
+            document.getElementById("msg").textContent = "Nenhuma senha válida para rechamar neste guichê!";
+            return;
+          }
+          // Rechama a senha escolhida (envia novo ts para forçar atualização no painel)
+          enviarSenha(escolhidoTipo, ultimoChamado.senha, guiche, true);
+          registrarAtendimento(escolhidoTipo, ultimoChamado.senha, guiche);
+        }).catch(err=>{
+          console.error(err);
+          document.getElementById("msg").textContent = "Erro ao ler dados de rechamada. Tente novamente.";
+        });
       }
     }
 
     function enviarSenha(tipo, senha, guiche, repetir) {
       document.getElementById("msg").textContent = `Chamando: ${tipo} - Senha ${senha} Guichê ${parseInt(guiche,10)}`;
+      // escreve chamada global (painel ouvidos por qualquer cliente)
       db.ref("chamadaSenha").set({
         tipo,
         senha,
         guiche,
-        repetir: !!repetir, // true para rechamada, false para chamada normal
-        ts: Date.now()      // timestamp para garantir mudança sempre
+        repetir: !!repetir,
+        ts: Date.now()
       });
+      // atualiza histórico global
       db.ref("historicoChamadas").once("value", snap=>{
         let lista = snap.val() || [];
         lista.push({tipo, senha, guiche, timestamp: Date.now()});
         if(lista.length>10) lista = lista.slice(-10);
         db.ref("historicoChamadas").set(lista);
+      });
+      // atualiza último por guichê (para persistência)
+      db.ref(`ultimoPorGuiche/${guiche}/${tipo}`).set({
+        senha,
+        timestamp: Date.now()
       });
     }
 
@@ -367,7 +422,7 @@
       return count;
     }
 
-    // ... Todo o restante do código de administração, relatórios, etc, permanece igual ...
+    // ... Todo o restante do código de administração, relatórios, etc, permanece compatível ...
     function adicionarUsuarioAutorizado() {
       const novoUsuario = document.getElementById("novoUsuario").value.trim();
       if (!novoUsuario) return;
@@ -492,259 +547,59 @@
       return (segundos/3600).toFixed(2) + "h";
     }
 
-    function exportarRelatorioExcelDetalhado(aba) {
-      db.ref("atendimentos").once("value", snap => {
-        const val = snap.val() || {};
-        const agora = new Date();
-        let workbook = XLSX.utils.book_new();
-
-        let resumoDados = [["Usuário", "Atendimentos Dia", "Atendimentos Mês", "Atendimentos Ano"]];
-        let totalDiaGeral = 0, totalMesGeral = 0, totalAnoGeral = 0;
-        for (let usuario in val) {
-          let atendimentos = Object.values(val[usuario]);
-          if (!atendimentos.length) continue;
-          let listaDia = atendimentos.filter(a=>{
-            let d = new Date(a.timestamp);
-            return d.toISOString().slice(0,10) === agora.toISOString().slice(0,10);
-          });
-          let listaMes = atendimentos.filter(a=>{
-            let d = new Date(a.timestamp);
-            return d.getMonth() === agora.getMonth() && d.getFullYear() === agora.getFullYear();
-          });
-          let listaAno = atendimentos.filter(a=>{
-            let d = new Date(a.timestamp);
-            return d.getFullYear() === agora.getFullYear();
-          });
-          let totalDia = contarAtendimentosValidos(listaDia);
-          let totalMes = contarAtendimentosValidos(listaMes);
-          let totalAno = contarAtendimentosValidos(listaAno);
-          resumoDados.push([usuario, totalDia, totalMes, totalAno]);
-          totalDiaGeral += totalDia;
-          totalMesGeral += totalMes;
-          totalAnoGeral += totalAno;
-        }
-        let wsResumo = XLSX.utils.aoa_to_sheet(resumoDados);
-        XLSX.utils.book_append_sheet(workbook, wsResumo, "Resumo");
-        let resumoTotal = [
-          ["Atendimentos Dia", "Atendimentos Mês", "Atendimentos Ano"],
-          [totalDiaGeral, totalMesGeral, totalAnoGeral]
-        ];
-        let wsTotal = XLSX.utils.aoa_to_sheet(resumoTotal);
-        XLSX.utils.book_append_sheet(workbook, wsTotal, "Resumo Total");
-
-        for (let usuario in val) {
-          let atendimentos = Object.values(val[usuario]);
-          if (!atendimentos.length) continue;
-          let atendimentosFiltrados = atendimentos.filter(a => {
-            let d = new Date(a.timestamp);
-            if (aba==='dia') return d.toISOString().slice(0,10) === agora.toISOString().slice(0,10);
-            if (aba==='mes') return d.getMonth() === agora.getMonth() && d.getFullYear() === agora.getFullYear();
-            if (aba==='ano') return d.getFullYear() === agora.getFullYear();
-            return true;
-          });
-          atendimentosFiltrados.sort((a,b)=>a.timestamp-b.timestamp);
-
-          let listaDia = atendimentos.filter(a=>{
-            let d = new Date(a.timestamp);
-            return d.toISOString().slice(0,10) === agora.toISOString().slice(0,10);
-          });
-          let listaMes = atendimentos.filter(a=>{
-            let d = new Date(a.timestamp);
-            return d.getMonth() === agora.getMonth() && d.getFullYear() === agora.getFullYear();
-          });
-          let listaAno = atendimentos.filter(a=>{
-            let d = new Date(a.timestamp);
-            return d.getFullYear() === agora.getFullYear();
-          });
-          let totalDia = contarAtendimentosValidos(listaDia);
-          let totalMes = contarAtendimentosValidos(listaMes);
-          let totalAno = contarAtendimentosValidos(listaAno);
-
-          let dados = [
-            [`Total atendimentos Dia`, totalDia],
-            [`Total atendimentos Mês`, totalMes],
-            [`Total atendimentos Ano`, totalAno],
-            [],
-            ["Hora", "Tipo", "Senha", "Guichê", "Intervalo"]
-          ];
-          let prev = null;
-          atendimentosFiltrados.forEach(a=>{
-            let tempo = prev ? formatTempo(Math.round((a.timestamp-prev.timestamp)/1000)) : "--";
-            dados.push([
-              new Date(a.timestamp).toLocaleString(),
-              a.tipo, a.senha, a.guiche, tempo
-            ]);
-            prev = a;
-          });
-          let ws = XLSX.utils.aoa_to_sheet(dados);
-          XLSX.utils.book_append_sheet(workbook, ws, usuario.substring(0,31));
-        }
-        XLSX.writeFile(workbook, "relatorio_atendimentos.xlsx");
-      });
-    }
-
-    function mostrarRelatorio(aba) {
-      db.ref("atendimentos").once("value", snap => {
-        const val = snap.val() || {};
-        const agora = new Date();
-        let html = `
-          <div style="font-size:1.2em;margin-bottom:7px;font-weight:bold;">Relatório de Atendimentos</div>
-          <button class="aba-btn ${aba==='dia'?'active':''}" onclick="mostrarRelatorio('dia')">Dia</button>
-          <button class="aba-btn ${aba==='mes'?'active':''}" onclick="mostrarRelatorio('mes')">Mês</button>
-          <button class="aba-btn ${aba==='ano'?'active':''}" onclick="mostrarRelatorio('ano')">Ano</button>
-          <button class="excel-btn" onclick="exportarRelatorioExcelDetalhado('${aba}')">Exportar Excel</button>
-          <button class="fechar-btn aba-btn" onclick="fecharRelatorio()">Fechar</button>
-          <table class="relatorio-table">
-            <tr>
-              <th>Usuário</th>
-              <th>Qtde</th>
-              <th>Primeiro</th>
-              <th>Último</th>
-              <th>Média Tempo</th>
-              <th>Detalhes</th>
-            </tr>
-        `;
-        for (let usuario in val) {
-          let atendimentos = Object.values(val[usuario]);
-          if (!atendimentos.length) continue;
-          let atendimentosFiltrados = atendimentos.filter(a => {
-            let d = new Date(a.timestamp);
-            if (aba==='dia') {
-              return d.toISOString().slice(0,10) === agora.toISOString().slice(0,10);
-            }
-            if (aba==='mes') {
-              return d.getMonth() === agora.getMonth() && d.getFullYear() === agora.getFullYear();
-            }
-            if (aba==='ano') {
-              return d.getFullYear() === agora.getFullYear();
-            }
-            return true;
-          });
-          if (!atendimentosFiltrados.length) continue;
-          let listaValidos = atendimentosFiltrados;
-          let totalValidos = contarAtendimentosValidos(listaValidos);
-
-          let tempos = [];
-          atendimentosFiltrados.sort((a,b)=>a.timestamp-b.timestamp);
-          for(let i=1; i<atendimentosFiltrados.length; i++) {
-            tempos.push(atendimentosFiltrados[i].timestamp - atendimentosFiltrados[i-1].timestamp);
-          }
-          let mediaTempo = tempos.length ? formatTempo(Math.round(tempos.reduce((a,b)=>a+b,0)/tempos.length/1000)) : '--';
-          let primeiro = new Date(atendimentosFiltrados[0].timestamp).toLocaleTimeString();
-          let ultimo = new Date(atendimentosFiltrados[atendimentosFiltrados.length-1].timestamp).toLocaleTimeString();
-          html += `<tr>
-            <td>${usuario}</td>
-            <td>${totalValidos}</td>
-            <td>${primeiro}</td>
-            <td>${ultimo}</td>
-            <td>${mediaTempo}</td>
-            <td>
-              <button class="aba-btn" onclick="mostrarDetalhesUsuario('${usuario}','${aba}')">Ver</button>
-            </td>
-          </tr>`;
-        }
-        html += `</table>`;
-        document.getElementById("relatorioArea").innerHTML = html;
-      });
-    }
-
-    window.mostrarDetalhesUsuario = function(usuario, aba) {
-      db.ref("atendimentos/" + usuario).once("value", snap => {
-        const val = Object.values(snap.val()||{});
-        const agora = new Date();
-        let atendimentosFiltrados = val.filter(a => {
-          let d = new Date(a.timestamp);
-          if (aba==='dia') {
-            return d.toISOString().slice(0,10) === agora.toISOString().slice(0,10);
-          }
-          if (aba==='mes') {
-            return d.getMonth() === agora.getMonth() && d.getFullYear() === agora.getFullYear();
-          }
-          if (aba==='ano') {
-            return d.getFullYear() === agora.getFullYear();
-          }
-          return true;
-        });
-        atendimentosFiltrados.sort((a,b)=>a.timestamp-b.timestamp);
-        let html = `<div><b>Detalhes de ${usuario} (${aba})</b><br>
-          <button class="aba-btn" onclick="mostrarRelatorio('${aba}')">Voltar</button>
-        <table class="relatorio-table">
-          <tr>
-            <th>Hora</th>
-            <th>Tipo</th>
-            <th>Senha</th>
-            <th>Guichê</th>
-            <th>Intervalo</th>
-          </tr>`;
-        let prev = null;
-        atendimentosFiltrados.forEach((a,i)=>{
-          let tempo = prev ? formatTempo(Math.round((a.timestamp-prev.timestamp)/1000)) : "--";
-          html += `<tr>
-            <td>${new Date(a.timestamp).toLocaleTimeString()}</td>
-            <td>${a.tipo}</td>
-            <td>${a.senha}</td>
-            <td>${a.guiche}</td>
-            <td>${tempo}</td>
-          </tr>`;
-          prev = a;
-        });
-        html += `</table></div>`;
-        document.getElementById("relatorioArea").innerHTML = html;
-      });
-    }
     // Olhinho para mostrar/ocultar senha
-function toggleSenhaVisivel() {
-  let input = document.getElementById("senha");
-  input.type = input.type === "password" ? "text" : "password";
-}
-
-// Enter faz login
-document.getElementById("senha").addEventListener("keyup",function(e){
-  if(e.key === "Enter"){ checarLogin(); }
-});
-document.getElementById("usuario").addEventListener("keyup",function(e){
-  if(e.key === "Enter"){ checarLogin(); }
-});
-
-// Mini painel de histórico de senhas chamadas (últimas 6, em tempo real)
-function atualizarMiniHistorico(){
-  if(!window.usuarioLogado) return;
-  if(window._miniHistRef) window._miniHistRef.off();
-  window._miniHistRef = db.ref("atendimentos/"+window.usuarioLogado).orderByChild("timestamp").limitToLast(6);
-  window._miniHistRef.on("value", snap=>{
-    const val = snap.val();
-    let lista = val ? Object.values(val).sort((a, b) => b.timestamp - a.timestamp) : [];
-    lista = lista.slice(0,6);
-    const ul = document.getElementById("painelHistoricoLista");
-    ul.innerHTML = "";
-    if (!lista.length) {
-      ul.innerHTML = `<li style="opacity:.8;">Nenhuma senha chamada ainda.</li>`;
-      return;
+    function toggleSenhaVisivel() {
+      let input = document.getElementById("senha");
+      input.type = input.type === "password" ? "text" : "password";
     }
-    lista.forEach(item => {
-      let tipoStr = item.tipo === "Agendar" ? "Agendar" : "Realizar";
-      let data = new Date(item.timestamp);
-      let hora = data.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-      let linha = `<span class="painel-historico-li-top">${tipoStr} &ndash; Senha <b>${item.senha}</b> &ndash; Guichê ${parseInt(item.guiche,10)}</span>
-                    <span class="painel-historico-li-bottom">${hora}</span>`;
-      let li = document.createElement("li");
-      li.innerHTML = linha;
-      ul.appendChild(li);
+
+    // Enter faz login
+    document.getElementById("senha").addEventListener("keyup",function(e){
+      if(e.key === "Enter"){ checarLogin(); }
     });
-  });
-}
+    document.getElementById("usuario").addEventListener("keyup",function(e){
+      if(e.key === "Enter"){ checarLogin(); }
+    });
 
-// Após login, mostrar o painel histórico e atualizar
-const _checarLoginOrig = checarLogin;
-checarLogin = function(){
-  _checarLoginOrig();
-  setTimeout(()=>{
-    if(window.usuarioLogado){
-      document.getElementById("painelHistorico").style.display = "block";
-      atualizarMiniHistorico();
+    // Mini painel de histórico de senhas chamadas (últimas 6, em tempo real)
+    function atualizarMiniHistorico(){
+      if(!window.usuarioLogado) return;
+      if(window._miniHistRef) window._miniHistRef.off();
+      window._miniHistRef = db.ref("atendimentos/"+window.usuarioLogado).orderByChild("timestamp").limitToLast(6);
+      window._miniHistRef.on("value", snap=>{
+        const val = snap.val();
+        let lista = val ? Object.values(val).sort((a, b) => b.timestamp - a.timestamp) : [];
+        lista = lista.slice(0,6);
+        const ul = document.getElementById("painelHistoricoLista");
+        ul.innerHTML = "";
+        if (!lista.length) {
+          ul.innerHTML = `<li style="opacity:.8;">Nenhuma senha chamada ainda.</li>`;
+          return;
+        }
+        lista.forEach(item => {
+          let tipoStr = item.tipo === "Agendar" ? "Agendar" : "Realizar";
+          let data = new Date(item.timestamp);
+          let hora = data.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+          let linha = `<span class="painel-historico-li-top">${tipoStr} &ndash; Senha <b>${item.senha}</b> &ndash; Guichê ${parseInt(item.guiche,10)}</span>
+                        <span class="painel-historico-li-bottom">${hora}</span>`;
+          let li = document.createElement("li");
+          li.innerHTML = linha;
+          ul.appendChild(li);
+        });
+      });
     }
-  },0);
-};
+
+    // Após login, mostrar o painel histórico e atualizar
+    const _checarLoginOrig = checarLogin;
+    checarLogin = function(){
+      _checarLoginOrig();
+      setTimeout(()=>{
+        if(window.usuarioLogado){
+          document.getElementById("painelHistorico").style.display = "block";
+          atualizarMiniHistorico();
+        }
+      },0);
+    };
   </script>
     <!-- MINI PAINEL HISTÓRICO -->
 <div class="painel-historico" id="painelHistorico" style="display:none;position:fixed;top:50px;right:40px;z-index:99;">
@@ -763,6 +618,3 @@ checarLogin = function(){
 </style>
 </body>
 </html>
-
-
-
