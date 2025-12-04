@@ -1,3 +1,4 @@
+V77.7
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -297,7 +298,6 @@
     // Listener global para atualizar a lista de chamadas (últimas 8)
     let _histChamadasRef = null;
     function iniciarHistoricoChamadas() {
-      // mostrar área
       const chamadasArea = document.getElementById("chamadasArea");
       chamadasArea.style.display = "block";
 
@@ -422,6 +422,210 @@
       return count;
     }
 
+    // Funções de relatório/exportação/detalhes (restauradas)
+    function exportarRelatorioExcelDetalhado(aba) {
+      db.ref("atendimentos").once("value", snap => {
+        const val = snap.val() || {};
+        const agora = new Date();
+        let workbook = XLSX.utils.book_new();
+
+        let resumoDados = [["Usuário", "Atendimentos Dia", "Atendimentos Mês", "Atendimentos Ano"]];
+        let totalDiaGeral = 0, totalMesGeral = 0, totalAnoGeral = 0;
+        for (let usuario in val) {
+          let atendimentos = Object.values(val[usuario]);
+          if (!atendimentos.length) continue;
+          let listaDia = atendimentos.filter(a=>{
+            let d = new Date(a.timestamp);
+            return d.toISOString().slice(0,10) === agora.toISOString().slice(0,10);
+          });
+          let listaMes = atendimentos.filter(a=>{
+            let d = new Date(a.timestamp);
+            return d.getMonth() === agora.getMonth() && d.getFullYear() === agora.getFullYear();
+          });
+          let listaAno = atendimentos.filter(a=>{
+            let d = new Date(a.timestamp);
+            return d.getFullYear() === agora.getFullYear();
+          });
+          let totalDia = contarAtendimentosValidos(listaDia);
+          let totalMes = contarAtendimentosValidos(listaMes);
+          let totalAno = contarAtendimentosValidos(listaAno);
+          resumoDados.push([usuario, totalDia, totalMes, totalAno]);
+          totalDiaGeral += totalDia;
+          totalMesGeral += totalMes;
+          totalAnoGeral += totalAno;
+        }
+        let wsResumo = XLSX.utils.aoa_to_sheet(resumoDados);
+        XLSX.utils.book_append_sheet(workbook, wsResumo, "Resumo");
+        let resumoTotal = [
+          ["Atendimentos Dia", "Atendimentos Mês", "Atendimentos Ano"],
+          [totalDiaGeral, totalMesGeral, totalAnoGeral]
+        ];
+        let wsTotal = XLSX.utils.aoa_to_sheet(resumoTotal);
+        XLSX.utils.book_append_sheet(workbook, wsTotal, "Resumo Total");
+
+        for (let usuario in val) {
+          let atendimentos = Object.values(val[usuario]);
+          if (!atendimentos.length) continue;
+          let atendimentosFiltrados = atendimentos.filter(a => {
+            let d = new Date(a.timestamp);
+            if (aba==='dia') return d.toISOString().slice(0,10) === agora.toISOString().slice(0,10);
+            if (aba==='mes') return d.getMonth() === agora.getMonth() && d.getFullYear() === agora.getFullYear();
+            if (aba==='ano') return d.getFullYear() === agora.getFullYear();
+            return true;
+          });
+          atendimentosFiltrados.sort((a,b)=>a.timestamp-b.timestamp);
+
+          let listaDia = atendimentos.filter(a=>{
+            let d = new Date(a.timestamp);
+            return d.toISOString().slice(0,10) === agora.toISOString().slice(0,10);
+          });
+          let listaMes = atendimentos.filter(a=>{
+            let d = new Date(a.timestamp);
+            return d.getMonth() === agora.getMonth() && d.getFullYear() === agora.getFullYear();
+          });
+          let listaAno = atendimentos.filter(a=>{
+            let d = new Date(a.timestamp);
+            return d.getFullYear() === agora.getFullYear();
+          });
+          let totalDia = contarAtendimentosValidos(listaDia);
+          let totalMes = contarAtendimentosValidos(listaMes);
+          let totalAno = contarAtendimentosValidos(listaAno);
+
+          let dados = [
+            [`Total atendimentos Dia`, totalDia],
+            [`Total atendimentos Mês`, totalMes],
+            [`Total atendimentos Ano`, totalAno],
+            [],
+            ["Hora", "Tipo", "Senha", "Guichê", "Intervalo"]
+          ];
+          let prev = null;
+          atendimentosFiltrados.forEach(a=>{
+            let tempo = prev ? formatTempo(Math.round((a.timestamp-prev.timestamp)/1000)) : "--";
+            dados.push([
+              new Date(a.timestamp).toLocaleString(),
+              a.tipo, a.senha, a.guiche, tempo
+            ]);
+            prev = a;
+          });
+          let ws = XLSX.utils.aoa_to_sheet(dados);
+          XLSX.utils.book_append_sheet(workbook, ws, usuario.substring(0,31));
+        }
+        XLSX.writeFile(workbook, "relatorio_atendimentos.xlsx");
+      });
+    }
+
+    function mostrarRelatorio(aba) {
+      db.ref("atendimentos").once("value", snap => {
+        const val = snap.val() || {};
+        const agora = new Date();
+        let html = `
+          <div style="font-size:1.2em;margin-bottom:7px;font-weight:bold;">Relatório de Atendimentos</div>
+          <button class="aba-btn ${aba==='dia'?'active':''}" onclick="mostrarRelatorio('dia')">Dia</button>
+          <button class="aba-btn ${aba==='mes'?'active':''}" onclick="mostrarRelatorio('mes')">Mês</button>
+          <button class="aba-btn ${aba==='ano'?'active':''}" onclick="mostrarRelatorio('ano')">Ano</button>
+          <button class="excel-btn" onclick="exportarRelatorioExcelDetalhado('${aba}')">Exportar Excel</button>
+          <button class="fechar-btn aba-btn" onclick="fecharRelatorio()">Fechar</button>
+          <table class="relatorio-table">
+            <tr>
+              <th>Usuário</th>
+              <th>Qtde</th>
+              <th>Primeiro</th>
+              <th>Último</th>
+              <th>Média Tempo</th>
+              <th>Detalhes</th>
+            </tr>
+        `;
+        for (let usuario in val) {
+          let atendimentos = Object.values(val[usuario]);
+          if (!atendimentos.length) continue;
+          let atendimentosFiltrados = atendimentos.filter(a => {
+            let d = new Date(a.timestamp);
+            if (aba==='dia') {
+              return d.toISOString().slice(0,10) === agora.toISOString().slice(0,10);
+            }
+            if (aba==='mes') {
+              return d.getMonth() === agora.getMonth() && d.getFullYear() === agora.getFullYear();
+            }
+            if (aba==='ano') {
+              return d.getFullYear() === agora.getFullYear();
+            }
+            return true;
+          });
+          if (!atendimentosFiltrados.length) continue;
+          let listaValidos = atendimentosFiltrados;
+          let totalValidos = contarAtendimentosValidos(listaValidos);
+
+          let tempos = [];
+          atendimentosFiltrados.sort((a,b)=>a.timestamp-b.timestamp);
+          for(let i=1; i<atendimentosFiltrados.length; i++) {
+            tempos.push(atendimentosFiltrados[i].timestamp - atendimentosFiltrados[i-1].timestamp);
+          }
+          let mediaTempo = tempos.length ? formatTempo(Math.round(tempos.reduce((a,b)=>a+b,0)/tempos.length/1000)) : '--';
+          let primeiro = new Date(atendimentosFiltrados[0].timestamp).toLocaleTimeString();
+          let ultimo = new Date(atendimentosFiltrados[atendimentosFiltrados.length-1].timestamp).toLocaleTimeString();
+          html += `<tr>
+            <td>${usuario}</td>
+            <td>${totalValidos}</td>
+            <td>${primeiro}</td>
+            <td>${ultimo}</td>
+            <td>${mediaTempo}</td>
+            <td>
+              <button class="aba-btn" onclick="mostrarDetalhesUsuario('${usuario}','${aba}')">Ver</button>
+            </td>
+          </tr>`;
+        }
+        html += `</table>`;
+        document.getElementById("relatorioArea").innerHTML = html;
+      });
+      document.getElementById("relatorioArea").style.display = "block";
+    }
+
+    window.mostrarDetalhesUsuario = function(usuario, aba) {
+      db.ref("atendimentos/" + usuario).once("value", snap => {
+        const val = Object.values(snap.val()||{});
+        const agora = new Date();
+        let atendimentosFiltrados = val.filter(a => {
+          let d = new Date(a.timestamp);
+          if (aba==='dia') {
+            return d.toISOString().slice(0,10) === agora.toISOString().slice(0,10);
+          }
+          if (aba==='mes') {
+            return d.getMonth() === agora.getMonth() && d.getFullYear() === agora.getFullYear();
+          }
+          if (aba==='ano') {
+            return d.getFullYear() === agora.getFullYear();
+          }
+          return true;
+        });
+        atendimentosFiltrados.sort((a,b)=>a.timestamp-b.timestamp);
+        let html = `<div><b>Detalhes de ${usuario} (${aba})</b><br>
+          <button class="aba-btn" onclick="mostrarRelatorio('${aba}')">Voltar</button>
+        <table class="relatorio-table">
+          <tr>
+            <th>Hora</th>
+            <th>Tipo</th>
+            <th>Senha</th>
+            <th>Guichê</th>
+            <th>Intervalo</th>
+          </tr>`;
+        let prev = null;
+        atendimentosFiltrados.forEach((a,i)=>{
+          let tempo = prev ? formatTempo(Math.round((a.timestamp-prev.timestamp)/1000)) : "--";
+          html += `<tr>
+            <td>${new Date(a.timestamp).toLocaleTimeString()}</td>
+            <td>${a.tipo}</td>
+            <td>${a.senha}</td>
+            <td>${a.guiche}</td>
+            <td>${tempo}</td>
+          </tr>`;
+          prev = a;
+        });
+        html += `</table></div>`;
+        document.getElementById("relatorioArea").innerHTML = html;
+      });
+    }
+
+    // funções admin / CRUD / demais (permanece igual)
     function adicionarUsuarioAutorizado() {
       const novoUsuario = document.getElementById("novoUsuario").value.trim();
       if (!novoUsuario) return;
@@ -533,7 +737,6 @@
         return;
       }
       mostrarRelatorio('dia');
-      document.getElementById("relatorioArea").style.display = "block";
     }
 
     function fecharRelatorio() {
