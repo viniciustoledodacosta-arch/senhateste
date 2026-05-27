@@ -1,4 +1,5 @@
-V77.7
+V7tc
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -92,7 +93,6 @@ V77.7
     }
     .admin-btn:hover { background: #1f5a48; filter: brightness(1.02); }
 
-    /* área de senhas chamadas (histórico global, exibido ao usuário logado) */
     .chamadas-area {
       margin-top: 18px;
       text-align: left;
@@ -210,7 +210,6 @@ V77.7
     <button class="admin-btn" onclick="abrirAdmin()">Administração</button>
     <button class="admin-btn" onclick="abrirRelatorio()">Relatórios</button>
 
-    <!-- área: Senhas Chamadas (histórico global, similar ao painel) -->
     <div class="chamadas-area" id="chamadasArea" style="display:none;">
       <div class="titulo-ch">Senhas Chamadas</div>
       <ul id="listaSenhasChamadas" class="lista-chamadas"></ul>
@@ -240,14 +239,14 @@ V77.7
     let isAdmin = false;
 
     const firebaseConfig = {
-      apiKey: "AIzaSyB-wxIiE1o4SlwhIAowvzDoP2MTCwHeUA8",
-      authDomain: "senha-teste-3792a.firebaseapp.com",
-      databaseURL: "https://senha-teste-3792a-default-rtdb.firebaseio.com",
-      projectId: "senha-teste-3792a",
-      storageBucket: "senha-teste-3792a.appspot.com",
-      messagingSenderId: "748802844835",
-      appId: "1:748802844835:web:443305d871158d21ab7716",
-      measurementId: "G-P6PCN541CD"
+      apiKey: "AIzaSyAsuP9gO2sBOmzBet2b7ijljMgTsXo29lE",
+      authDomain: "painel-senhas-hcpa.firebaseapp.com",
+      databaseURL: "https://painel-senhas-hcpa-default-rtdb.firebaseio.com",
+      projectId: "painel-senhas-hcpa",
+      storageBucket: "painel-senhas-hcpa.firebasestorage.app",
+      messagingSenderId: "164117661743",
+      appId: "1:164117661743:web:c82a42d485af05ecd71eda",
+      measurementId: "G-92XCSNDE54"
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
@@ -256,10 +255,7 @@ V77.7
       usuariosAutorizados = snap.val() || [];
     });
 
-    let contadores = {
-      Agendar: 0,
-      Agendados: 0
-    };
+    let contadores = { Agendar: 0, Agendados: 0 };
     let historicoGuiche = {};
 
     db.ref("contadoresSenha").once("value", snap => {
@@ -295,7 +291,6 @@ V77.7
       msg.textContent = "Usuário ou senha incorretos!";
     }
 
-    // Listener global para atualizar a lista de chamadas (últimas 8)
     let _histChamadasRef = null;
     function iniciarHistoricoChamadas() {
       const chamadasArea = document.getElementById("chamadasArea");
@@ -347,7 +342,7 @@ V77.7
         });
 
         enviarSenha(tipoSenha, senhaStr, guiche, false);
-        registrarAtendimento(tipoSenha, senhaStr, guiche);
+        registrarAtendimento(tipoSenha, senhaStr, guiche, false);
       }, false);
     }
 
@@ -378,7 +373,7 @@ V77.7
             return;
           }
           enviarSenha(escolhidoTipo, ultimoChamado.senha, guiche, true);
-          registrarAtendimento(escolhidoTipo, ultimoChamado.senha, guiche);
+          registrarAtendimento(escolhidoTipo, ultimoChamado.senha, guiche, true);
         }).catch(err=>{
           console.error(err);
           document.getElementById("msg").textContent = "Erro ao ler dados de rechamada. Tente novamente.";
@@ -411,19 +406,190 @@ V77.7
     function contarAtendimentosValidos(lista) {
       if(!lista || lista.length === 0) return 0;
       lista.sort((a, b) => a.timestamp - b.timestamp);
-      let count = 1;
-      let ultimo = lista[0].timestamp;
-      for(let i=1; i<lista.length; i++) {
-        if(lista[i].timestamp - ultimo >= 60000) {
-          count++;
-          ultimo = lista[i].timestamp;
+      let count = 0;
+      let ultimo = null;
+      
+      for(let i = 0; i < lista.length; i++) {
+        // REGRA 1: Ignorar rechamadas
+        if(lista[i].rechamar === true) {
+          continue;
         }
+        
+        // REGRA 2: Ignorar se a diferença for menor que 60 segundos do anterior válido
+        if(ultimo !== null && (lista[i].timestamp - ultimo) < 60000) {
+          continue;
+        }
+        
+        count++;
+        ultimo = lista[i].timestamp;
       }
       return count;
     }
 
-    // Funções de relatório/exportação/detalhes (restauradas)
+    // Função para definir turno
+    function definirTurno(timestamp) {
+      let data = new Date(timestamp);
+      let horas = data.getHours();
+      let minutos = data.getMinutes();
+      let totalMinutos = horas * 60 + minutos;
+
+      let manha_inicio = 7 * 60 + 30;
+      let manha_fim = 12 * 60 + 30;
+      let tarde_inicio = 12 * 60 + 31;
+      let tarde_fim = 20 * 60;
+
+      if (totalMinutos >= manha_inicio && totalMinutos <= manha_fim) {
+        return "MANHÃ";
+      } else if (totalMinutos >= tarde_inicio && totalMinutos <= tarde_fim) {
+        return "TARDE";
+      }
+      return "FORA";
+    }
+
+    function exportarExcelMelhorado() {
+      if (!isAdmin) {
+        alert("Acesso restrito ao administrador!");
+        return;
+      }
+
+      db.ref("atendimentos").once("value", snap => {
+        const val = snap.val() || {};
+        const agora = new Date();
+        const anoAtual = agora.getFullYear();
+        
+        let workbook = XLSX.utils.book_new();
+
+        let abaGeral = [
+          ["RESUMO GERAL"],
+          [],
+          ["Período", "Total Atendimentos"],
+          ["Hoje", 0],
+          ["Este Mês", 0],
+          ["Este Ano", 0]
+        ];
+
+        let totalHoje = 0, totalMes = 0, totalAno = 0;
+        
+        for (let usuario in val) {
+          let atendimentos = Object.values(val[usuario]);
+          if (!atendimentos.length) continue;
+
+          let hoje = atendimentos.filter(a => {
+            let d = new Date(a.timestamp);
+            return d.toISOString().slice(0,10) === agora.toISOString().slice(0,10);
+          });
+          totalHoje += contarAtendimentosValidos(hoje);
+
+          let mes = atendimentos.filter(a => {
+            let d = new Date(a.timestamp);
+            return d.getMonth() === agora.getMonth() && d.getFullYear() === anoAtual;
+          });
+          totalMes += contarAtendimentosValidos(mes);
+
+          let ano = atendimentos.filter(a => {
+            let d = new Date(a.timestamp);
+            return d.getFullYear() === anoAtual;
+          });
+          totalAno += contarAtendimentosValidos(ano);
+        }
+
+        abaGeral[3][1] = totalHoje;
+        abaGeral[4][1] = totalMes;
+        abaGeral[5][1] = totalAno;
+
+        let wsGeral = XLSX.utils.aoa_to_sheet(abaGeral);
+        XLSX.utils.book_append_sheet(workbook, wsGeral, "GERAL");
+
+        // ABAS POR MÊS COM TURNOS
+        for (let mes = 0; mes < 12; mes++) {
+          let nomeMes = new Date(anoAtual, mes, 1).toLocaleDateString('pt-BR', {month: 'long'});
+          nomeMes = nomeMes.charAt(0).toUpperCase() + nomeMes.slice(1);
+
+          let diasNoMes = new Date(anoAtual, mes + 1, 0).getDate();
+
+          let usuarios = [];
+          for (let usuario in val) {
+            let atendimentos = Object.values(val[usuario]);
+            if (atendimentos.length > 0) {
+              usuarios.push(usuario);
+            }
+          }
+
+          let dados = [];
+
+          // SEÇÃO MANHÃ
+          dados.push(["MANHÃ"]);
+          let cabecalhoManha = ["Usuário"];
+          for (let dia = 1; dia <= diasNoMes; dia++) {
+            cabecalhoManha.push(dia);
+          }
+          dados.push(cabecalhoManha);
+
+          for (let usuario of usuarios) {
+            let atendimentos = Object.values(val[usuario]);
+            let linha = [usuario];
+
+            for (let dia = 1; dia <= diasNoMes; dia++) {
+              let dataVerificar = new Date(anoAtual, mes, dia);
+              let dataStr = dataVerificar.toISOString().slice(0,10);
+
+              let atendimentosDoDia = atendimentos.filter(a => {
+                let d = new Date(a.timestamp);
+                return d.toISOString().slice(0,10) === dataStr && definirTurno(a.timestamp) === "MANHÃ";
+              });
+
+              let total = contarAtendimentosValidos(atendimentosDoDia);
+              linha.push(total);
+            }
+
+            dados.push(linha);
+          }
+
+          dados.push([]);
+
+          // SEÇÃO TARDE
+          dados.push(["TARDE"]);
+          let cabecalhoTarde = ["Usuário"];
+          for (let dia = 1; dia <= diasNoMes; dia++) {
+            cabecalhoTarde.push(dia);
+          }
+          dados.push(cabecalhoTarde);
+
+          for (let usuario of usuarios) {
+            let atendimentos = Object.values(val[usuario]);
+            let linha = [usuario];
+
+            for (let dia = 1; dia <= diasNoMes; dia++) {
+              let dataVerificar = new Date(anoAtual, mes, dia);
+              let dataStr = dataVerificar.toISOString().slice(0,10);
+
+              let atendimentosDoDia = atendimentos.filter(a => {
+                let d = new Date(a.timestamp);
+                return d.toISOString().slice(0,10) === dataStr && definirTurno(a.timestamp) === "TARDE";
+              });
+
+              let total = contarAtendimentosValidos(atendimentosDoDia);
+              linha.push(total);
+            }
+
+            dados.push(linha);
+          }
+
+          let ws = XLSX.utils.aoa_to_sheet(dados);
+          let nomeAbaMes = nomeMes.substring(0, 31);
+          XLSX.utils.book_append_sheet(workbook, ws, nomeAbaMes);
+        }
+
+        XLSX.writeFile(workbook, `relatorio_${agora.getDate()}-${agora.getMonth()+1}-${anoAtual}.xlsx`);
+      });
+    }
+
     function exportarRelatorioExcelDetalhado(aba) {
+      if (!isAdmin) {
+        alert("Acesso restrito ao administrador!");
+        return;
+      }
+
       db.ref("atendimentos").once("value", snap => {
         const val = snap.val() || {};
         const agora = new Date();
@@ -518,12 +684,17 @@ V77.7
       db.ref("atendimentos").once("value", snap => {
         const val = snap.val() || {};
         const agora = new Date();
+        
+        let botaoExcel = !isAdmin ? '' : `<button class="excel-btn" onclick="exportarRelatorioExcelDetalhado('${aba}')">Exportar Excel (Detalhado)</button>`;
+        let botaoNovoExcel = !isAdmin ? '' : `<button class="excel-btn" onclick="exportarExcelMelhorado()">Exportar Excel (Novo)</button>`;
+        
         let html = `
           <div style="font-size:1.2em;margin-bottom:7px;font-weight:bold;">Relatório de Atendimentos</div>
           <button class="aba-btn ${aba==='dia'?'active':''}" onclick="mostrarRelatorio('dia')">Dia</button>
           <button class="aba-btn ${aba==='mes'?'active':''}" onclick="mostrarRelatorio('mes')">Mês</button>
           <button class="aba-btn ${aba==='ano'?'active':''}" onclick="mostrarRelatorio('ano')">Ano</button>
-          <button class="excel-btn" onclick="exportarRelatorioExcelDetalhado('${aba}')">Exportar Excel</button>
+          ${botaoExcel}
+          ${botaoNovoExcel}
           <button class="fechar-btn aba-btn" onclick="fecharRelatorio()">Fechar</button>
           <table class="relatorio-table">
             <tr>
@@ -625,7 +796,6 @@ V77.7
       });
     }
 
-    // funções admin / CRUD / demais (permanece igual)
     function adicionarUsuarioAutorizado() {
       const novoUsuario = document.getElementById("novoUsuario").value.trim();
       if (!novoUsuario) return;
@@ -645,7 +815,7 @@ V77.7
       mostrarCamposAdmin();
     }
 
-    function registrarAtendimento(tipo, senha, guiche) {
+    function registrarAtendimento(tipo, senha, guiche, rechamar) {
       if (!usuarioLogado) return;
       const now = new Date();
       const dataHoje = now.toISOString().slice(0,10);
@@ -655,6 +825,7 @@ V77.7
         senha,
         guiche,
         data: dataHoje,
+        rechamar: !!rechamar
       };
       db.ref("atendimentos/" + usuarioLogado).push(registro);
     }
@@ -754,7 +925,6 @@ V77.7
       input.type = input.type === "password" ? "text" : "password";
     }
 
-    // Enter faz login
     document.getElementById("senha").addEventListener("keyup",function(e){
       if(e.key === "Enter"){ checarLogin(); }
     });
