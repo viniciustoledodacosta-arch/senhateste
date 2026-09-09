@@ -548,10 +548,7 @@
     const db = firebase.database();
 
     // Carregar usuários autorizados
-    db.ref("usuariosAutorizados").on("value", snap => {
-      usuariosAutorizados = snap.val() || [];
-      atualizarSelectsUsuarios();
-    });
+
 
     // Carregar atendimentos em tempo real
     db.ref("atendimentos").on("value", snap => {
