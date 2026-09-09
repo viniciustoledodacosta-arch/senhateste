@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Painel de Chefia - Atendimentos</title>
+  <style>
+    :root {
+      --verde-hcpa: #276e5b;
+      --amarelo-hcpa: #ffe900;
+      --preto: #000;
+      --cinza: #333;
+      --cinza-claro: #f5f5f5;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #f0f0f0;
+      color: #333;
+      font-family: Arial, Helvetica, sans-serif;
+      min-height: 100vh;
+    }
+
+    /* LOGIN */
+    .login-container {
+      background: var(--verde-hcpa);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .login-form {
+      background: var(--preto);
+      border-radius: 15px;
+      padding: 40px;
+      box-shadow: 0 0 20px #0007;
+      text-align: center;
+      min-width: 350px;
+    }
+
+    .login-form .titulo {
+      font-size: 2em;
+      color: var(--amarelo-hcpa);
+      margin-bottom: 20px;
+      font-weight: bold;
+    }
+
+    .login-form label {
+      display: block;
+      color: var(--amarelo-hcpa);
+      font-weight: bold;
+      margin-top: 15px;
+      margin-bottom: 5px;
+      text-align: left;
+      font-size: 1.1em;
+    }
+
+    .login-form input {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      margin-bottom: 20px;
+      font-size: 1em;
+      box-sizing: border-box;
+    }
+
+    .login-form button {
+      background: var(--amarelo-hcpa);
+      color: var(--preto);
+      border: none;
+      border-radius: 8px;
+      padding: 12px 30px;
+      font-size: 1.1em;
+      font-weight: bold;
+      cursor: pointer;
+      width: 100%;
+      transition: background 0.2s;
+    }
+
+    .login-form button:hover {
+      filter: brightness(0.95);
+    }
+
+    .login-form .msg {
+      color: #ff6b6b;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+
+    /* PAINEL */
+    .painel-container {
+      display: none;
+      padding: 20px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .header-painel {
+      background: var(--verde-hcpa);
+      color: var(--amarelo-hcpa);
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .header-painel .titulo {
+      font-size: 1.8em;
+      font-weight: bold;
+    }
+
+    .header-painel .logout-btn {
+      background: #d70000;
+      color: #fff;
+      border: none;
+      padding: 8px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.2s;
+    }
+
+    .header-painel .logout-btn:hover {
+      background: #a00000;
+    }
+
+    /* FILTROS */
+    .filtros-area {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px #0002;
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      align-items: flex-end;
+    }
+
+    .filtro-grupo {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .filtro-grupo label {
+      font-weight: bold;
+      font-size: 0.95em;
+      color: #333;
+    }
+
+    .filtro-grupo select,
+    .filtro-grupo input {
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 0.95em;
+      min-width: 150px;
+    }
+
+    .filtro-grupo button {
+      background: var(--verde-hcpa);
+      color: var(--amarelo-hcpa);
+      border: none;
+      padding: 8px 20px;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .filtro-grupo button:hover {
+      background: #1f5a48;
+    }
+
+    /* ESTATÍSTICAS */
+    .stats-area {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .stat-card {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px #0002;
+      text-align: center;
+      border-left: 5px solid var(--verde-hcpa);
+    }
+
+    .stat-card .label {
+      color: #666;
+      font-size: 0.95em;
+      margin-bottom: 8px;
+      font-weight: bold;
+    }
+
+    .stat-card .valor {
+      font-size: 2.2em;
+      color: var(--verde-hcpa);
+      font-weight: bold;
+    }
+
+    /* TABELA */
+    .tabela-area {
+      background: #fff;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px #0002;
+      overflow-x: auto;
+    }
+
+    .tabela-titulo {
+      background: var(--verde-hcpa);
+      color: var(--amarelo-hcpa);
+      padding: 15px 20px;
+      font-weight: bold;
+      font-size: 1.1em;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.95em;
+    }
+
+    table th {
+      background: var(--preto);
+      color: var(--amarelo-hcpa);
+      padding: 12px;
+      text-align: left;
+      font-weight: bold;
+      border-bottom: 2px solid var(--verde-hcpa);
+    }
+
+    table td {
+      padding: 12px;
+      border-bottom: 1px solid #eee;
+    }
+
+    table tr:hover {
+      background: var(--cinza-claro);
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.85em;
+      font-weight: bold;
+      color: #fff;
+    }
+
+    .status-agendar {
+      background: #d70000;
+    }
+
+    .status-realizar {
+      background: #0074d9;
+    }
+
+    .status-preferencial {
+      background: var(--amarelo-hcpa);
+      color: var(--preto);
+    }
+
+    /* ABAS */
+    .abas-container {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .aba-btn {
+      background: #ddd;
+      color: #333;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.2s;
+    }
+
+    .aba-btn.active {
+      background: var(--verde-hcpa);
+      color: var(--amarelo-hcpa);
+    }
+
+    .aba-btn:hover {
+      background: var(--verde-hcpa);
+      color: var(--amarelo-hcpa);
+    }
+
+    .aba-conteudo {
+      display: none;
+    }
+
+    .aba-conteudo.active {
+      display: block;
+    }
+
+    /* RESPONSIVIDADE */
+    @media (max-width: 768px) {
+      .header-painel {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+      }
+
+      .filtros-area {
+        flex-direction: column;
+      }
+
+      .filtro-grupo select,
+      .filtro-grupo input {
+        min-width: 100%;
+      }
+
+      table {
+        font-size: 0.85em;
+      }
+
+      table th,
+      table td {
+        padding: 8px;
+      }
+    }
+
+    .msg-vazio {
+      text-align: center;
+      padding: 40px 20px;
+      color: #999;
+      font-size: 1.1em;
+    }
+  </style>
+  <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-database-compat.js"></script>
+</head>
+<body>
+  <!-- LOGIN -->
+  <div id="loginContainer" class="login-container">
+    <div class="login-form">
+      <div class="titulo">Painel de Chefia</div>
+      <label for="usuarioLogin">Usuário:</label>
+      <input type="text" id="usuarioLogin" autofocus>
+      <label for="senhaLogin">Senha:</label>
+      <input type="password" id="senhaLogin">
+      <button onclick="fazerLogin()">Entrar</button>
+      <div id="msgLogin" class="msg"></div>
+    </div>
+  </div>
+
+  <!-- PAINEL -->
+  <div id="painelContainer" class="painel-container">
+    <div class="header-painel">
+      <div>
+        <div class="titulo">Painel de Chefia - Atendimentos</div>
+        <div id="usuarioAtual" style="font-size: 0.9em; margin-top: 5px;">Usuário: --</div>
+      </div>
+      <button class="logout-btn" onclick="fazerLogout()">Sair</button>
+    </div>
+
+    <!-- ABAS -->
+    <div class="abas-container">
+      <button class="aba-btn active" onclick="mudarAba('tempo-real')">📊 Tempo Real</button>
+      <button class="aba-btn" onclick="mudarAba('por-usuario')">👥 Por Usuário</button>
+      <button class="aba-btn" onclick="mudarAba('historico')">📜 Histórico</button>
+    </div>
+
+    <!-- ABA 1: TEMPO REAL -->
+    <div id="abaTempoReal" class="aba-conteudo active">
+      <div class="filtros-area">
+        <div class="filtro-grupo">
+          <label>Tipo:</label>
+          <select id="filtroTipo" onchange="atualizarTempoReal()">
+            <option value="">Todos</option>
+            <option value="Agendar">Agendar</option>
+            <option value="Agendados">Realizar</option>
+            <option value="Preferencial">Preferencial</option>
+          </select>
+        </div>
+        <div class="filtro-grupo">
+          <label>Usuário:</label>
+          <select id="filtroUsuarioReal" onchange="atualizarTempoReal()">
+            <option value="">Todos</option>
+          </select>
+        </div>
+        <div class="filtro-grupo">
+          <button onclick="atualizarTempoReal()">🔄 Atualizar</button>
+        </div>
+      </div>
+
+      <div class="stats-area">
+        <div class="stat-card">
+          <div class="label">Atendimentos Hoje</div>
+          <div class="valor" id="totalHoje">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">Atendimentos Este Mês</div>
+          <div class="valor" id="totalMes">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">Usuários Ativos</div>
+          <div class="valor" id="usuariosAtivos">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">Tempo Médio Entre Chamadas</div>
+          <div class="valor" id="tempoMedio">--</div>
+        </div>
+      </div>
+
+      <div class="tabela-area">
+        <div class="tabela-titulo">Últimos Atendimentos</div>
+        <table>
+          <thead>
+            <tr>
+              <th>Hora</th>
+              <th>Usuário</th>
+              <th>Tipo</th>
+              <th>Senha</th>
+              <th>Guichê</th>
+            </tr>
+          </thead>
+          <tbody id="tabelaTempoReal">
+            <tr><td colspan="5" class="msg-vazio">Carregando...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ABA 2: POR USUÁRIO -->
+    <div id="abaUsuario" class="aba-conteudo">
+      <div class="filtros-area">
+        <div class="filtro-grupo">
+          <label>Período:</label>
+          <select id="filtroPeriodo" onchange="atualizarPorUsuario()">
+            <option value="dia">Hoje</option>
+            <option value="mes">Este Mês</option>
+            <option value="ano">Este Ano</option>
+          </select>
+        </div>
+        <div class="filtro-grupo">
+          <button onclick="atualizarPorUsuario()">🔄 Atualizar</button>
+        </div>
+      </div>
+
+      <div class="tabela-area">
+        <div class="tabela-titulo">Atendimentos por Usuário</div>
+        <table>
+          <thead>
+            <tr>
+              <th>Usuário</th>
+              <th>Total Atendimentos</th>
+              <th>Agendar</th>
+              <th>Realizar</th>
+              <th>Preferencial</th>
+              <th>Primeira Chamada</th>
+              <th>Última Chamada</th>
+              <th>Tempo Médio</th>
+            </tr>
+          </thead>
+          <tbody id="tabelaUsuarios">
+            <tr><td colspan="8" class="msg-vazio">Carregando...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ABA 3: HISTÓRICO DETALHADO -->
+    <div id="abaHistorico" class="aba-conteudo">
+      <div class="filtros-area">
+        <div class="filtro-grupo">
+          <label>Usuário:</label>
+          <select id="filtroUsuarioHist">
+            <option value="">Todos</option>
+          </select>
+        </div>
+        <div class="filtro-grupo">
+          <label>Data:</label>
+          <input type="date" id="filtroData">
+        </div>
+        <div class="filtro-grupo">
+          <label>Tipo:</label>
+          <select id="filtroTipoHist">
+            <option value="">Todos</option>
+            <option value="Agendar">Agendar</option>
+            <option value="Agendados">Realizar</option>
+            <option value="Preferencial">Preferencial</option>
+          </select>
+        </div>
+        <div class="filtro-grupo">
+          <button onclick="atualizarHistorico()">🔍 Buscar</button>
+        </div>
+      </div>
+
+      <div class="tabela-area">
+        <div class="tabela-titulo">Histórico Detalhado de Atendimentos</div>
+        <table>
+          <thead>
+            <tr>
+              <th>Data</th>
+              <th>Hora</th>
+              <th>Usuário</th>
+              <th>Tipo</th>
+              <th>Senha</th>
+              <th>Guichê</th>
+              <th>Intervalo</th>
+            </tr>
+          </thead>
+          <tbody id="tabelaHistorico">
+            <tr><td colspan="7" class="msg-vazio">Carregando...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const senhaChefiaCorreta = "chefe2025";
+    let usuarioLogadoChefia = null;
+    let atendimentosData = {};
+    let usuariosAutorizados = [];
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyB-wxIiE1o4SlwhIAowvzDoP2MTCwHeUA8",
+      authDomain: "senha-teste-3792a.firebaseapp.com",
+      databaseURL: "https://senha-teste-3792a-default-rtdb.firebaseio.com",
+      projectId: "senha-teste-3792a",
+      storageBucket: "senha-teste-3792a.appspot.com",
+      messagingSenderId: "748802844835",
+      appId: "1:748802844835:web:443305d871158d21ab7716",
+      measurementId: "G-P6PCN541CD"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    // Carregar usuários autorizados
+    db.ref("usuariosAutorizados").on("value", snap => {
+      usuariosAutorizados = snap.val() || [];
+      atualizarSelectsUsuarios();
+    });
+
+    // Carregar atendimentos em tempo real
+    db.ref("atendimentos").on("value", snap => {
+      atendimentosData = snap.val() || {};
+      atualizarTempoReal();
+      atualizarPorUsuario();
+    });
+
+    function fazerLogin() {
+      const usuario = document.getElementById("usuarioLogin").value.trim();
+      const senha = document.getElementById("senhaLogin").value;
+      const msg = document.getElementById("msgLogin");
+
+      // Aceitar qualquer usuário autorizado com a senha de chefia
+      if (usuariosAutorizados.includes(usuario) && senha === senhaChefiaCorreta) {
+        usuarioLogadoChefia = usuario;
+        document.getElementById("loginContainer").style.display = "none";
+        document.getElementById("painelContainer").style.display = "block";
+        document.getElementById("usuarioAtual").textContent = `Usuário: ${usuarioLogadoChefia}`;
+        msg.textContent = "";
+        return;
+      }
+
+      msg.textContent = "Usuário ou senha incorretos!";
+    }
+
+    function fazerLogout() {
+      usuarioLogadoChefia = null;
+      document.getElementById("loginContainer").style.display = "flex";
+      document.getElementById("painelContainer").style.display = "none";
+      document.getElementById("usuarioLogin").value = "";
+      document.getElementById("senhaLogin").value = "";
+    }
+
+    function mudarAba(aba) {
+      // Remover ativa
+      document.querySelectorAll(".aba-conteudo").forEach(el => el.classList.remove("active"));
+      document.querySelectorAll(".aba-btn").forEach(el => el.classList.remove("active"));
+
+      // Adicionar ativa
+      document.getElementById("aba" + capitalizar(aba)).classList.add("active");
+      event.target.classList.add("active");
+
+      // Atualizar dados
+      if (aba === "tempo-real") atualizarTempoReal();
+      if (aba === "por-usuario") atualizarPorUsuario();
+      if (aba === "historico") atualizarHistorico();
+    }
+
+    function atualizarSelectsUsuarios() {
+      const selects = ["filtroUsuarioReal", "filtroUsuarioHist"];
+      selects.forEach(id => {
+        const select = document.getElementById(id);
+        const valorAtual = select.value;
+        select.innerHTML = '<option value="">Todos</option>';
+        usuariosAutorizados.forEach(u => {
+          select.innerHTML += `<option value="${u}">${u}</option>`;
+        });
+        select.value = valorAtual;
+      });
+    }
+
+    function atualizarTempoReal() {
+      const filtroTipo = document.getElementById("filtroTipo").value;
+      const filtroUsuario = document.getElementById("filtroUsuarioReal").value;
+      const agora = new Date();
+      const hojeStr = agora.toISOString().slice(0, 10);
+
+      let todosAtendimentos = [];
+      let totalHoje = 0;
+      let totalMes = 0;
+      let usuariosAtivosList = new Set();
+      let tempos = [];
+
+      for (let usuario in atendimentosData) {
+        const atendimentos = Object.values(atendimentosData[usuario]);
+        atendimentos.forEach(a => {
+          const dataAtend = new Date(a.timestamp).toISOString().slice(0, 10);
+
+          // Filtrar tipo
+          if (filtroTipo && a.tipo !== filtroTipo) return;
+
+          // Filtrar usuário
+          if (filtroUsuario && usuario !== filtroUsuario) return;
+
+          // Contar estatísticas
+          if (dataAtend === hojeStr) totalHoje++;
+
+          const dataObj = new Date(a.timestamp);
+          if (dataObj.getMonth() === agora.getMonth() && dataObj.getFullYear() === agora.getFullYear()) {
+            totalMes++;
+          }
+
+          usuariosAtivosList.add(usuario);
+          todosAtendimentos.push({...a, usuario, data: dataAtend});
+
+          if (atendimentos.length > 1) {
+            const idx = atendimentos.indexOf(a);
+            if (idx > 0) {
+              tempos.push(a.timestamp - atendimentos[idx - 1].timestamp);
+            }
+          }
+        });
+      }
+
+      // Atualizar estatísticas
+      document.getElementById("totalHoje").textContent = totalHoje;
+      document.getElementById("totalMes").textContent = totalMes;
+      document.getElementById("usuariosAtivos").textContent = usuariosAtivosList.size;
+
+      const tempoMediaSeg = tempos.length ? Math.round(tempos.reduce((a, b) => a + b, 0) / tempos.length / 1000) : 0;
+      document.getElementById("tempoMedio").textContent = formatTempo(tempoMediaSeg);
+
+      // Atualizar tabela (últimos 20)
+      todosAtendimentos.sort((a, b) => b.timestamp - a.timestamp);
+      const tbody = document.getElementById("tabelaTempoReal");
+      tbody.innerHTML = "";
+
+      if (todosAtendimentos.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" class="msg-vazio">Nenhum atendimento encontrado</td></tr>';
+        return;
+      }
+
+      todosAtendimentos.slice(0, 20).forEach(a => {
+        const hora = new Date(a.timestamp).toLocaleTimeString("pt-BR");
+        const statusClass = a.tipo === "Agendar" ? "status-agendar" : 
+                           a.tipo === "Agendados" ? "status-realizar" : "status-preferencial";
+        
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${hora}</td>
+          <td>${a.usuario}</td>
+          <td><span class="status-badge ${statusClass}">${a.tipo}</span></td>
+          <td>${a.senha}</td>
+          <td>${a.guiche}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function atualizarPorUsuario() {
+      const periodo = document.getElementById("filtroPeriodo").value;
+      const agora = new Date();
+      const hojeStr = agora.toISOString().slice(0, 10);
+
+      const tbody = document.getElementById("tabelaUsuarios");
+      tbody.innerHTML = "";
+
+      const usuariosStats = {};
+
+      for (let usuario in atendimentosData) {
+        const atendimentos = Object.values(atendimentosData[usuario]);
+        let atendimentosFiltrados = [];
+
+        atendimentos.forEach(a => {
+          const dataAtend = new Date(a.timestamp);
+          const dataStr = dataAtend.toISOString().slice(0, 10);
+
+          let incluir = false;
+          if (periodo === "dia") {
+            incluir = dataStr === hojeStr;
+          } else if (periodo === "mes") {
+            incluir = dataAtend.getMonth() === agora.getMonth() && dataAtend.getFullYear() === agora.getFullYear();
+          } else if (periodo === "ano") {
+            incluir = dataAtend.getFullYear() === agora.getFullYear();
+          }
+
+          if (incluir) atendimentosFiltrados.push(a);
+        });
+
+        if (atendimentosFiltrados.length === 0) continue;
+
+        atendimentosFiltrados.sort((a, b) => a.timestamp - b.timestamp);
+
+        let stats = {
+          usuario,
+          total: atendimentosFiltrados.length,
+          agendar: atendimentosFiltrados.filter(a => a.tipo === "Agendar").length,
+          realizar: atendimentosFiltrados.filter(a => a.tipo === "Agendados").length,
+          preferencial: atendimentosFiltrados.filter(a => a.tipo === "Preferencial").length,
+          primeira: new Date(atendimentosFiltrados[0].timestamp).toLocaleTimeString("pt-BR"),
+          ultima: new Date(atendimentosFiltrados[atendimentosFiltrados.length - 1].timestamp).toLocaleTimeString("pt-BR"),
+          tempoMedio: "--"
+        };
+
+        let tempos = [];
+        for (let i = 1; i < atendimentosFiltrados.length; i++) {
+          tempos.push(atendimentosFiltrados[i].timestamp - atendimentosFiltrados[i - 1].timestamp);
+        }
+        if (tempos.length > 0) {
+          const mediaSeg = Math.round(tempos.reduce((a, b) => a + b, 0) / tempos.length / 1000);
+          stats.tempoMedio = formatTempo(mediaSeg);
+        }
+
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td><strong>${stats.usuario}</strong></td>
+          <td>${stats.total}</td>
+          <td>${stats.agendar}</td>
+          <td>${stats.realizar}</td>
+          <td>${stats.preferencial}</td>
+          <td>${stats.primeira}</td>
+          <td>${stats.ultima}</td>
+          <td>${stats.tempoMedio}</td>
+        `;
+        tbody.appendChild(tr);
+      }
+
+      if (tbody.children.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" class="msg-vazio">Nenhum atendimento neste período</td></tr>';
+      }
+    }
+
+    function atualizarHistorico() {
+      const usuarioFilt = document.getElementById("filtroUsuarioHist").value;
+      const dataFilt = document.getElementById("filtroData").value;
+      const tipoFilt = document.getElementById("filtroTipoHist").value;
+
+      const tbody = document.getElementById("tabelaHistorico");
+      tbody.innerHTML = "";
+
+      let todosAtendimentos = [];
+
+      for (let usuario in atendimentosData) {
+        if (usuarioFilt && usuario !== usuarioFilt) continue;
+
+        const atendimentos = Object.values(atendimentosData[usuario]);
+        atendimentos.forEach(a => {
+          const dataAtend = a.data || new Date(a.timestamp).toISOString().slice(0, 10);
+          
+          if (dataFilt && dataAtend !== dataFilt) return;
+          if (tipoFilt && a.tipo !== tipoFilt) return;
+
+          todosAtendimentos.push({...a, usuario, dataStr: dataAtend});
+        });
+      }
+
+      todosAtendimentos.sort((a, b) => b.timestamp - a.timestamp);
+
+      if (todosAtendimentos.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" class="msg-vazio">Nenhum resultado encontrado</td></tr>';
+        return;
+      }
+
+      let prevTimestamp = null;
+      todosAtendimentos.forEach(a => {
+        const data = new Date(a.timestamp).toLocaleDateString("pt-BR");
+        const hora = new Date(a.timestamp).toLocaleTimeString("pt-BR");
+        const statusClass = a.tipo === "Agendar" ? "status-agendar" : 
+                           a.tipo === "Agendados" ? "status-realizar" : "status-preferencial";
+        
+        let intervalo = "--";
+        if (prevTimestamp) {
+          const diff = Math.round((a.timestamp - prevTimestamp) / 1000);
+          intervalo = formatTempo(diff);
+        }
+        prevTimestamp = a.timestamp;
+
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${data}</td>
+          <td>${hora}</td>
+          <td>${a.usuario}</td>
+          <td><span class="status-badge ${statusClass}">${a.tipo}</span></td>
+          <td>${a.senha}</td>
+          <td>${a.guiche}</td>
+          <td>${intervalo}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function formatTempo(segundos) {
+      if (segundos < 60) return segundos + "s";
+      if (segundos < 3600) return (segundos / 60).toFixed(1) + "min";
+      return (segundos / 3600).toFixed(2) + "h";
+    }
+
+    function capitalizar(str) {
+      return str.replace(/-([a-z])/g, (g) => g[1].toUpperCase())
+               .replace(/^./, (g) => g.toUpperCase());
+    }
+
+    // Atualizar em tempo real
+    setInterval(() => {
+      if (usuarioLogadoChefia) {
+        const abaAtiva = document.querySelector(".aba-conteudo.active").id;
+        if (abaAtiva === "abaTempoReal") atualizarTempoReal();
+      }
+    }, 5000);
+
+    // Focus ao carregar
+    document.getElementById("usuarioLogin").focus();
+  </script>
+</body>
+</html>
