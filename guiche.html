@@ -276,9 +276,6 @@ teste 4
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    db.ref("usuariosAutorizados").on("value", snap => {
-      usuariosAutorizados = snap.val() || [];
-    });
 
     // Inicializa contadores com Preferencial incluído
     let contadores = { Agendar: 0, Agendados: 0, Preferencial: 0 };
