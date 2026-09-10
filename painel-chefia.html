@@ -638,7 +638,7 @@
     const senhaChefiaCorreta = "chefe2025";
     let usuarioLogadoChefia = null;
     let atendimentosData = {};
-    let usuariosAutorizados = ["vtcosta"];
+    let usuariosAutorizados = [];
     let chartPorUsuario = null;
     let chartTipo = null;
 
@@ -656,21 +656,57 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // Carregar usuários autorizados
-    db.ref("usuariosAutorizados").on("value", snap => {
-      const usuarios = snap.val() || [];
-      usuariosAutorizados = ["vtcosta"];
-      if (Array.isArray(usuarios)) {
-        usuariosAutorizados.push(...usuarios);
-      } else if (typeof usuarios === "object") {
-        usuariosAutorizados.push(...Object.values(usuarios));
-      }
-      atualizarSelectsUsuarios();
-    });
+    console.log("🔄 Inicializando Painel de Chefia...");
 
-    // Carregar atendimentos
+    // CARREGAR ATENDIMENTOS E USUÁRIOS DO FIREBASE
+    function carregarAtendimentos() {
+      db.ref("atendimentos").once("value", snap => {
+        const dados = snap.val() || {};
+        console.log("📊 Dados do Firebase:", dados);
+        
+        atendimentosData = {};
+        usuariosAutorizados = [];
+
+        // Extrair usuários e seus atendimentos
+        for (let usuario in dados) {
+          if (dados[usuario] && typeof dados[usuario] === 'object') {
+            atendimentosData[usuario] = dados[usuario];
+            usuariosAutorizados.push(usuario);
+          }
+        }
+
+        console.log("✅ Usuários carregados:", usuariosAutorizados);
+        console.log("✅ Total de usuários:", usuariosAutorizados.length);
+        
+        atualizarSelectsUsuarios();
+        
+        if (usuarioLogadoChefia) {
+          atualizarResumo();
+          atualizarTempoReal();
+          atualizarGraficos();
+        }
+      }).catch(err => {
+        console.error("❌ Erro ao carregar atendimentos:", err);
+        alert("Erro ao carregar dados do Firebase!");
+      });
+    }
+
+    // Carregar atendimentos ao iniciar
+    carregarAtendimentos();
+
+    // Sincronizar em tempo real
     db.ref("atendimentos").on("value", snap => {
-      atendimentosData = snap.val() || {};
+      const dados = snap.val() || {};
+      atendimentosData = {};
+      usuariosAutorizados = [];
+
+      for (let usuario in dados) {
+        if (dados[usuario] && typeof dados[usuario] === 'object') {
+          atendimentosData[usuario] = dados[usuario];
+          usuariosAutorizados.push(usuario);
+        }
+      }
+
       if (usuarioLogadoChefia) {
         atualizarResumo();
         atualizarTempoReal();
@@ -680,9 +716,12 @@
     });
 
     function fazerLogin() {
-      const usuario = document.getElementById("usuarioLogin").value.trim();
+      const usuario = document.getElementById("usuarioLogin").value.trim().toLowerCase();
       const senha = document.getElementById("senhaLogin").value;
       const msg = document.getElementById("msgLogin");
+
+      console.log("🔐 Tentativa de login:", usuario);
+      console.log("📝 Usuários autorizados:", usuariosAutorizados);
 
       if (usuariosAutorizados.includes(usuario) && senha === senhaChefiaCorreta) {
         usuarioLogadoChefia = usuario;
@@ -690,6 +729,8 @@
         document.getElementById("painelContainer").style.display = "block";
         document.getElementById("usuarioAtual").textContent = `👤 Usuário: ${usuarioLogadoChefia}`;
         msg.textContent = "";
+        
+        console.log("✅ Login bem-sucedido:", usuario);
         
         setTimeout(() => {
           atualizarResumo();
@@ -700,6 +741,7 @@
       }
 
       msg.textContent = "❌ Usuário ou senha incorretos!";
+      console.log("❌ Login falhou!");
     }
 
     function fazerLogout() {
@@ -715,7 +757,11 @@
       document.querySelectorAll(".aba-btn").forEach(el => el.classList.remove("active"));
 
       const abaId = "aba" + aba.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join('');
-      document.getElementById(abaId).classList.add("active");
+      const abaElement = document.getElementById(abaId);
+      if (abaElement) {
+        abaElement.classList.add("active");
+      }
+      
       event.target.classList.add("active");
 
       if (aba === "resumo") atualizarResumo();
@@ -742,8 +788,12 @@
       const usuariosStats = {};
 
       for (let usuario in atendimentosData) {
-        const atendimentos = Object.values(atendimentosData[usuario]);
-        const hoje = atendimentos.filter(a => new Date(a.timestamp).toISOString().slice(0, 10) === hojeStr);
+        const atendimentosObj = atendimentosData[usuario];
+        const atendimentos = Object.values(atendimentosObj).filter(a => a && typeof a === 'object');
+        const hoje = atendimentos.filter(a => {
+          const dataAtend = new Date(a.timestamp).toISOString().slice(0, 10);
+          return dataAtend === hojeStr;
+        });
 
         if (hoje.length === 0) continue;
 
@@ -781,55 +831,61 @@
           <td>${stats.primeiro}</td>
           <td>${stats.ultimo}</td>
           <td><span class="tempo-badge">${stats.tempoMedio}</span></td>
-          <td><button class="btn-ver" onclick="abrirHistoricoUsuario('${usuario}', ${JSON.stringify(stats.atendimentos).replace(/'/g, "&apos;")})">Ver</button></td>
+          <td><button class="btn-ver" onclick="abrirHistoricoUsuario('${usuario}', '${btoa(JSON.stringify(stats.atendimentos))}')">Ver</button></td>
         `;
         tbody.appendChild(tr);
       });
     }
 
-    function abrirHistoricoUsuario(usuario, atendimentos) {
-      const modal = document.getElementById("modalHistorico");
-      const titulo = document.getElementById("modalTitulo");
-      const conteudo = document.getElementById("modalConteudo");
+    function abrirHistoricoUsuario(usuario, atendimentosBase64) {
+      try {
+        const atendimentos = JSON.parse(atob(atendimentosBase64));
+        const modal = document.getElementById("modalHistorico");
+        const titulo = document.getElementById("modalTitulo");
+        const conteudo = document.getElementById("modalConteudo");
 
-      titulo.textContent = `📊 Histórico - ${usuario}`;
-      conteudo.innerHTML = "";
+        titulo.textContent = `📊 Histórico - ${usuario}`;
+        conteudo.innerHTML = "";
 
-      atendimentos.forEach(a => {
-        const data = new Date(a.timestamp);
-        const hora = data.toLocaleTimeString("pt-BR");
-        const dataStr = data.toLocaleDateString("pt-BR");
-        const tipoClass = a.tipo === "Agendar" ? "status-agendar" : 
-                         a.tipo === "Agendados" ? "status-realizar" : "status-preferencial";
+        atendimentos.forEach(a => {
+          const data = new Date(a.timestamp);
+          const hora = data.toLocaleTimeString("pt-BR");
+          const dataStr = data.toLocaleDateString("pt-BR");
+          const tipoClass = a.tipo === "Agendar" ? "status-agendar" : 
+                           a.tipo === "Agendados" ? "status-realizar" : "status-preferencial";
 
-        const div = document.createElement("div");
-        div.className = "historico-item";
-        div.innerHTML = `
-          <div class="historico-item-info">
-            <div class="historico-item-label">Data</div>
-            <div class="historico-item-valor">${dataStr}</div>
-          </div>
-          <div class="historico-item-info">
-            <div class="historico-item-label">Hora</div>
-            <div class="historico-item-valor">${hora}</div>
-          </div>
-          <div class="historico-item-info">
-            <div class="historico-item-label">Tipo</div>
-            <div class="historico-item-valor ${tipoClass}">${a.tipo}</div>
-          </div>
-          <div class="historico-item-info">
-            <div class="historico-item-label">Senha</div>
-            <div class="historico-item-valor">${a.senha}</div>
-          </div>
-          <div class="historico-item-info">
-            <div class="historico-item-label">Guichê</div>
-            <div class="historico-item-valor">${a.guiche}</div>
-          </div>
-        `;
-        conteudo.appendChild(div);
-      });
+          const div = document.createElement("div");
+          div.className = "historico-item";
+          div.innerHTML = `
+            <div class="historico-item-info">
+              <div class="historico-item-label">Data</div>
+              <div class="historico-item-valor">${dataStr}</div>
+            </div>
+            <div class="historico-item-info">
+              <div class="historico-item-label">Hora</div>
+              <div class="historico-item-valor">${hora}</div>
+            </div>
+            <div class="historico-item-info">
+              <div class="historico-item-label">Tipo</div>
+              <div class="historico-item-valor ${tipoClass}">${a.tipo}</div>
+            </div>
+            <div class="historico-item-info">
+              <div class="historico-item-label">Senha</div>
+              <div class="historico-item-valor">${a.senha}</div>
+            </div>
+            <div class="historico-item-info">
+              <div class="historico-item-label">Guichê</div>
+              <div class="historico-item-valor">${a.guiche}</div>
+            </div>
+          `;
+          conteudo.appendChild(div);
+        });
 
-      modal.style.display = "block";
+        modal.style.display = "block";
+      } catch (err) {
+        console.error("❌ Erro ao abrir histórico:", err);
+        alert("Erro ao carregar histórico!");
+      }
     }
 
     function fecharModal() {
@@ -844,7 +900,7 @@
     }
 
     function buscarHistorico() {
-      const usuario = document.getElementById("filtroUsuarioHist").value;
+      const usuario = document.getElementById("filtroUsuarioHist").value.toLowerCase();
       const data = document.getElementById("filtroDataHist").value;
       const tipo = document.getElementById("filtroTipoHist").value;
 
@@ -856,7 +912,9 @@
       for (let usu in atendimentosData) {
         if (usuario && usu !== usuario) continue;
 
-        const atendimentos = Object.values(atendimentosData[usu]);
+        const atendimentosObj = atendimentosData[usu];
+        const atendimentos = Object.values(atendimentosObj).filter(a => a && typeof a === 'object');
+        
         atendimentos.forEach(a => {
           const dataAtend = new Date(a.timestamp).toISOString().slice(0, 10);
           
@@ -917,7 +975,9 @@
       let tempos = [];
 
       for (let usuario in atendimentosData) {
-        const atendimentos = Object.values(atendimentosData[usuario]);
+        const atendimentosObj = atendimentosData[usuario];
+        const atendimentos = Object.values(atendimentosObj).filter(a => a && typeof a === 'object');
+        
         atendimentos.forEach(a => {
           const dataAtend = new Date(a.timestamp).toISOString().slice(0, 10);
 
@@ -981,7 +1041,8 @@
       let agendar = 0, realizar = 0, preferencial = 0;
 
       for (let usuario in atendimentosData) {
-        const atendimentos = Object.values(atendimentosData[usuario]);
+        const atendimentosObj = atendimentosData[usuario];
+        const atendimentos = Object.values(atendimentosObj).filter(a => a && typeof a === 'object');
         const hoje = atendimentos.filter(a => new Date(a.timestamp).toISOString().slice(0, 10) === hojeStr);
 
         if (hoje.length === 0) continue;
@@ -1061,7 +1122,10 @@
       let inativos = [];
 
       for (let usuario in atendimentosData) {
-        const atendimentos = Object.values(atendimentosData[usuario]);
+        const atendimentosObj = atendimentosData[usuario];
+        if (!atendimentosObj || typeof atendimentosObj !== 'object') continue;
+
+        const atendimentos = Object.values(atendimentosObj).filter(a => a && typeof a === 'object');
         if (atendimentos.length === 0) continue;
 
         const ultimoAtendimento = atendimentos[atendimentos.length - 1];
