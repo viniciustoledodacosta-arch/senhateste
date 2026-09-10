@@ -25,8 +25,8 @@
     }
 
     body {
-      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-      color: #333;
+      background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+      color: #fff;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       min-height: 100vh;
     }
@@ -58,12 +58,6 @@
       text-shadow: 0 2px 4px #000;
     }
 
-    .login-form .subtitulo {
-      color: #888;
-      margin-bottom: 30px;
-      font-size: 0.95em;
-    }
-
     .login-form label {
       display: block;
       color: var(--amarelo-hcpa);
@@ -86,12 +80,6 @@
       color: var(--amarelo-hcpa);
     }
 
-    .login-form input:focus {
-      outline: none;
-      border-color: #fff;
-      box-shadow: 0 0 10px var(--amarelo-hcpa);
-    }
-
     .login-form button {
       background: linear-gradient(135deg, var(--amarelo-hcpa) 0%, #ffd700 100%);
       color: var(--preto);
@@ -104,7 +92,6 @@
       width: 100%;
       transition: all 0.3s;
       text-transform: uppercase;
-      letter-spacing: 1px;
     }
 
     .login-form button:hover {
@@ -116,19 +103,13 @@
       color: #ff6b6b;
       margin-top: 15px;
       font-weight: bold;
-      animation: pulse 1s infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.7; }
     }
 
     /* PAINEL */
     .painel-container {
       display: none;
       padding: 20px;
-      max-width: 1600px;
+      max-width: 1800px;
       margin: 0 auto;
     }
 
@@ -148,13 +129,6 @@
     .header-painel .titulo {
       font-size: 2em;
       font-weight: bold;
-      text-shadow: 0 2px 4px #000;
-    }
-
-    .header-painel .subtitle {
-      font-size: 0.9em;
-      opacity: 0.9;
-      margin-top: 5px;
     }
 
     .header-actions {
@@ -163,7 +137,7 @@
       flex-wrap: wrap;
     }
 
-    .logout-btn, .export-btn, .relatorio-btn {
+    .export-btn, .logout-btn {
       border: none;
       padding: 10px 20px;
       border-radius: 8px;
@@ -172,16 +146,6 @@
       transition: all 0.3s;
       text-transform: uppercase;
       font-size: 0.9em;
-    }
-
-    .logout-btn {
-      background: #d70000;
-      color: #fff;
-    }
-
-    .logout-btn:hover {
-      background: #a00000;
-      transform: scale(1.05);
     }
 
     .export-btn {
@@ -194,309 +158,13 @@
       transform: scale(1.05);
     }
 
-    .relatorio-btn {
-      background: var(--laranja);
+    .logout-btn {
+      background: #d70000;
       color: #fff;
     }
 
-    .relatorio-btn:hover {
-      background: #e68900;
-      transform: scale(1.05);
-    }
-
-    /* ALERTA */
-    .alerta-inatividade {
-      background: linear-gradient(135deg, #ff6b6b 0%, #d70000 100%);
-      color: #fff;
-      padding: 15px 20px;
-      border-radius: 10px;
-      margin-bottom: 20px;
-      display: none;
-      animation: slideIn 0.5s ease;
-      border-left: 5px solid #fff;
-      font-weight: bold;
-    }
-
-    @keyframes slideIn {
-      from { transform: translateX(-100%); opacity: 0; }
-      to { transform: translateX(0); opacity: 1; }
-    }
-
-    /* FILTROS */
-    .filtros-area {
-      background: #fff;
-      padding: 20px;
-      border-radius: 15px;
-      margin-bottom: 20px;
-      box-shadow: 0 5px 20px #0002;
-      display: flex;
-      gap: 15px;
-      flex-wrap: wrap;
-      align-items: flex-end;
-      border-left: 5px solid var(--verde-hcpa);
-    }
-
-    .filtro-grupo {
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-    }
-
-    .filtro-grupo label {
-      font-weight: bold;
-      font-size: 0.95em;
-      color: var(--verde-hcpa);
-    }
-
-    .filtro-grupo select, .filtro-grupo input {
-      padding: 10px 12px;
-      border: 2px solid var(--verde-hcpa);
-      border-radius: 8px;
-      font-size: 0.95em;
-      min-width: 150px;
-      background: #fff;
-      color: #333;
-    }
-
-    .filtro-grupo select:focus, .filtro-grupo input:focus {
-      outline: none;
-      border-color: var(--amarelo-hcpa);
-      box-shadow: 0 0 5px var(--amarelo-hcpa);
-    }
-
-    .filtro-grupo button {
-      background: linear-gradient(135deg, var(--verde-hcpa) 0%, #1f5a48 100%);
-      color: var(--amarelo-hcpa);
-      border: none;
-      padding: 10px 20px;
-      border-radius: 8px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: all 0.3s;
-      text-transform: uppercase;
-      font-size: 0.9em;
-    }
-
-    .filtro-grupo button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 5px 15px #0002;
-    }
-
-    /* ESTATÍSTICAS */
-    .stats-area {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 20px;
-      margin-bottom: 20px;
-    }
-
-    .stat-card {
-      background: linear-gradient(135deg, #fff 0%, #f9f9f9 100%);
-      padding: 25px;
-      border-radius: 15px;
-      box-shadow: 0 5px 20px #0002;
-      text-align: center;
-      border-left: 5px solid;
-      transition: all 0.3s;
-    }
-
-    .stat-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 10px 30px #0003;
-    }
-
-    .stat-card.verde { border-left-color: var(--verde-hcpa); }
-    .stat-card.azul { border-left-color: var(--azul); }
-    .stat-card.amarelo { border-left-color: var(--amarelo-hcpa); }
-    .stat-card.vermelho { border-left-color: var(--vermelho); }
-
-    .stat-card .label {
-      color: #666;
-      font-size: 0.95em;
-      margin-bottom: 10px;
-      font-weight: bold;
-      text-transform: uppercase;
-    }
-
-    .stat-card .valor {
-      font-size: 2.5em;
-      font-weight: bold;
-      background: linear-gradient(135deg, var(--verde-hcpa) 0%, var(--azul) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    /* RANKING */
-    .ranking-container {
-      background: #fff;
-      border-radius: 15px;
-      overflow: hidden;
-      box-shadow: 0 5px 20px #0002;
-      margin-bottom: 20px;
-      border-left: 5px solid var(--verde-claro);
-    }
-
-    .ranking-titulo {
-      background: linear-gradient(135deg, var(--verde-claro) 0%, #3d8b40 100%);
-      color: #fff;
-      padding: 20px;
-      font-weight: bold;
-      font-size: 1.2em;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .ranking-lista {
-      padding: 20px;
-    }
-
-    .ranking-item {
-      display: flex;
-      align-items: center;
-      padding: 15px;
-      margin-bottom: 10px;
-      background: linear-gradient(135deg, #f9f9f9 0%, #fff 100%);
-      border-radius: 10px;
-      border-left: 4px solid;
-      transition: all 0.3s;
-    }
-
-    .ranking-item:hover {
-      transform: translateX(5px);
-      box-shadow: 0 5px 15px #0002;
-    }
-
-    .ranking-item.top1 { border-left-color: #ffd700; }
-    .ranking-item.top2 { border-left-color: #c0c0c0; }
-    .ranking-item.top3 { border-left-color: #cd7f32; }
-    .ranking-item.outros { border-left-color: #ddd; }
-
-    .ranking-posicao {
-      font-size: 1.5em;
-      font-weight: bold;
-      min-width: 50px;
-      text-align: center;
-      margin-right: 15px;
-    }
-
-    .ranking-item.top1 .ranking-posicao { color: #ffd700; }
-    .ranking-item.top2 .ranking-posicao { color: #c0c0c0; }
-    .ranking-item.top3 .ranking-posicao { color: #cd7f32; }
-
-    .ranking-info {
-      flex: 1;
-    }
-
-    .ranking-nome {
-      font-weight: bold;
-      color: #333;
-      margin-bottom: 5px;
-    }
-
-    .ranking-stats {
-      font-size: 0.9em;
-      color: #666;
-    }
-
-    .ranking-valor {
-      font-size: 1.3em;
-      font-weight: bold;
-      color: var(--verde-hcpa);
-      min-width: 100px;
-      text-align: right;
-    }
-
-    /* GRÁFICOS */
-    .graficos-area {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
-      gap: 20px;
-      margin-bottom: 20px;
-    }
-
-    .grafico-container {
-      background: #fff;
-      padding: 25px;
-      border-radius: 15px;
-      box-shadow: 0 5px 20px #0002;
-      border-top: 4px solid var(--verde-hcpa);
-    }
-
-    .grafico-titulo {
-      font-weight: bold;
-      color: var(--verde-hcpa);
-      margin-bottom: 15px;
-      font-size: 1.1em;
-    }
-
-    canvas {
-      max-height: 300px;
-    }
-
-    /* TABELA */
-    .tabela-area {
-      background: #fff;
-      border-radius: 15px;
-      overflow: hidden;
-      box-shadow: 0 5px 20px #0002;
-      overflow-x: auto;
-      border-left: 5px solid var(--azul);
-    }
-
-    .tabela-titulo {
-      background: linear-gradient(135deg, var(--azul) 0%, #0055a4 100%);
-      color: #fff;
-      padding: 20px;
-      font-weight: bold;
-      font-size: 1.1em;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.95em;
-    }
-
-    table th {
-      background: var(--preto);
-      color: var(--amarelo-hcpa);
-      padding: 15px;
-      text-align: left;
-      font-weight: bold;
-      border-bottom: 3px solid var(--verde-hcpa);
-    }
-
-    table td {
-      padding: 12px 15px;
-      border-bottom: 1px solid #eee;
-    }
-
-    table tr:hover {
-      background: var(--cinza-claro);
-    }
-
-    .status-badge {
-      display: inline-block;
-      padding: 6px 14px;
-      border-radius: 20px;
-      font-size: 0.85em;
-      font-weight: bold;
-      color: #fff;
-    }
-
-    .status-agendar {
-      background: linear-gradient(135deg, #d70000 0%, #a00000 100%);
-    }
-
-    .status-realizar {
-      background: linear-gradient(135deg, #0074d9 0%, #0055a4 100%);
-    }
-
-    .status-preferencial {
-      background: linear-gradient(135deg, var(--amarelo-hcpa) 0%, #ffc800 100%);
-      color: var(--preto);
+    .logout-btn:hover {
+      background: #a00000;
     }
 
     /* ABAS */
@@ -508,8 +176,8 @@
     }
 
     .aba-btn {
-      background: #ddd;
-      color: #333;
+      background: #333;
+      color: #aaa;
       border: none;
       padding: 12px 20px;
       border-radius: 8px;
@@ -523,11 +191,6 @@
     .aba-btn.active {
       background: linear-gradient(135deg, var(--verde-hcpa) 0%, #1f5a48 100%);
       color: var(--amarelo-hcpa);
-      box-shadow: 0 5px 15px #0002;
-    }
-
-    .aba-btn:hover {
-      transform: translateY(-2px);
       box-shadow: 0 5px 15px #0002;
     }
 
@@ -545,48 +208,267 @@
       to { opacity: 1; }
     }
 
+    /* TABELA PRINCIPAL - COMO O PRINT */
+    .tabela-usuarios-container {
+      background: #1a1a1a;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 5px 20px #0002;
+      border: 2px solid var(--verde-hcpa);
+      margin-bottom: 20px;
+    }
+
+    .tabela-titulo {
+      background: linear-gradient(135deg, var(--verde-hcpa) 0%, #1f5a48 100%);
+      color: var(--amarelo-hcpa);
+      padding: 20px;
+      font-weight: bold;
+      font-size: 1.1em;
+      border-bottom: 2px solid var(--amarelo-hcpa);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 1em;
+    }
+
+    table thead {
+      background: #0a0a0a;
+    }
+
+    table th {
+      color: var(--amarelo-hcpa);
+      padding: 15px;
+      text-align: left;
+      font-weight: bold;
+      border-bottom: 2px solid var(--amarelo-hcpa);
+    }
+
+    table tbody tr {
+      border-bottom: 1px solid #333;
+      transition: all 0.3s;
+    }
+
+    table tbody tr:hover {
+      background: #2a2a2a;
+      transform: scale(1.01);
+    }
+
+    table td {
+      padding: 15px;
+      color: var(--amarelo-hcpa);
+    }
+
+    .btn-ver {
+      background: var(--verde-claro);
+      color: #fff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.3s;
+    }
+
+    .btn-ver:hover {
+      background: #3d8b40;
+      transform: scale(1.05);
+    }
+
+    .numero {
+      color: #4CAF50;
+      font-weight: bold;
+    }
+
+    .tempo-badge {
+      background: rgba(76, 175, 80, 0.2);
+      padding: 4px 12px;
+      border-radius: 20px;
+      color: #4CAF50;
+      border: 1px solid #4CAF50;
+    }
+
+    /* ALERTAS */
+    .alerta-inatividade {
+      background: linear-gradient(135deg, #d70000 0%, #a00000 100%);
+      color: #fff;
+      padding: 15px 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      display: none;
+      border-left: 5px solid #fff;
+      font-weight: bold;
+    }
+
+    /* MODAL HISTÓRICO */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.8);
+    }
+
+    .modal-content {
+      background-color: #1a1a1a;
+      margin: 5% auto;
+      padding: 30px;
+      border: 2px solid var(--amarelo-hcpa);
+      border-radius: 15px;
+      width: 90%;
+      max-width: 1000px;
+      max-height: 80vh;
+      overflow-y: auto;
+      color: var(--amarelo-hcpa);
+    }
+
+    .close {
+      color: var(--amarelo-hcpa);
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .close:hover {
+      color: #fff;
+    }
+
+    .modal h2 {
+      margin-bottom: 20px;
+      color: var(--amarelo-hcpa);
+      border-bottom: 2px solid var(--amarelo-hcpa);
+      padding-bottom: 10px;
+    }
+
+    .historico-items {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .historico-item {
+      background: #2a2a2a;
+      padding: 15px;
+      border-radius: 8px;
+      border-left: 4px solid var(--amarelo-hcpa);
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 15px;
+    }
+
+    .historico-item-info {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .historico-item-label {
+      font-size: 0.9em;
+      color: #999;
+      text-transform: uppercase;
+    }
+
+    .historico-item-valor {
+      font-size: 1.1em;
+      font-weight: bold;
+    }
+
+    .status-agendar {
+      color: #d70000;
+    }
+
+    .status-realizar {
+      color: #0074d9;
+    }
+
+    .status-preferencial {
+      color: var(--amarelo-hcpa);
+    }
+
     .msg-vazio {
       text-align: center;
       padding: 40px 20px;
-      color: #999;
+      color: #666;
       font-size: 1.1em;
     }
 
-    /* RESPONSIVIDADE */
+    /* GRÁFICOS */
+    .graficos-area {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .grafico-container {
+      background: #1a1a1a;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 5px 20px #0002;
+      border: 2px solid var(--verde-hcpa);
+    }
+
+    .grafico-titulo {
+      font-weight: bold;
+      color: var(--amarelo-hcpa);
+      margin-bottom: 15px;
+      font-size: 1.1em;
+    }
+
+    canvas {
+      max-height: 300px;
+    }
+
+    /* STATS */
+    .stats-area {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .stat-card {
+      background: #1a1a1a;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 5px 20px #0002;
+      text-align: center;
+      border-left: 5px solid var(--verde-hcpa);
+      border: 2px solid var(--verde-hcpa);
+    }
+
+    .stat-card .label {
+      color: #999;
+      font-size: 0.95em;
+      margin-bottom: 10px;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+
+    .stat-card .valor {
+      font-size: 2.5em;
+      font-weight: bold;
+      color: var(--amarelo-hcpa);
+    }
+
     @media (max-width: 768px) {
       .header-painel {
         flex-direction: column;
         gap: 15px;
-        text-align: center;
-      }
-
-      .header-actions {
-        width: 100%;
-        flex-direction: column;
-      }
-
-      .logout-btn, .export-btn, .relatorio-btn {
-        width: 100%;
-      }
-
-      .filtros-area {
-        flex-direction: column;
-      }
-
-      .filtro-grupo select, .filtro-grupo input {
-        min-width: 100%;
-      }
-
-      .graficos-area {
-        grid-template-columns: 1fr;
-      }
-
-      table {
-        font-size: 0.8em;
       }
 
       table th, table td {
         padding: 8px;
+        font-size: 0.85em;
+      }
+
+      .historico-item {
+        grid-template-columns: 1fr;
       }
     }
   </style>
@@ -598,7 +480,6 @@
   <div id="loginContainer" class="login-container">
     <div class="login-form">
       <div class="titulo">📊 PAINEL DE CHEFIA</div>
-      <div class="subtitulo">Sistema de Monitoramento de Atendimentos</div>
       <label for="usuarioLogin">👤 Usuário:</label>
       <input type="text" id="usuarioLogin" autofocus>
       <label for="senhaLogin">🔐 Senha:</label>
@@ -613,11 +494,10 @@
     <div class="header-painel">
       <div>
         <div class="titulo">📊 Painel de Chefia - Atendimentos</div>
-        <div class="subtitle" id="usuarioAtual">Usuário: --</div>
+        <div id="usuarioAtual" style="font-size: 0.9em; margin-top: 5px;">Usuário: --</div>
       </div>
       <div class="header-actions">
         <button class="export-btn" onclick="exportarExcel()">📥 Exportar Excel</button>
-        <button class="relatorio-btn" onclick="gerarRelatorio()">📋 Relatório</button>
         <button class="logout-btn" onclick="fazerLogout()">🚪 Sair</button>
       </div>
     </div>
@@ -626,55 +506,56 @@
 
     <!-- ABAS -->
     <div class="abas-container">
-      <button class="aba-btn active" onclick="mudarAba('tempo-real')">⚡ Tempo Real</button>
-      <button class="aba-btn" onclick="mudarAba('desempenho')">📈 Desempenho</button>
-      <button class="aba-btn" onclick="mudarAba('ranking')">🏆 Ranking</button>
+      <button class="aba-btn active" onclick="mudarAba('resumo')">📊 Resumo Geral</button>
+      <button class="aba-btn" onclick="mudarAba('tempo-real')">⚡ Tempo Real</button>
+      <button class="aba-btn" onclick="mudarAba('graficos')">📈 Gráficos</button>
       <button class="aba-btn" onclick="mudarAba('historico')">📜 Histórico</button>
     </div>
 
-    <!-- ABA 1: TEMPO REAL -->
-    <div id="abaTempoReal" class="aba-conteudo active">
-      <div class="filtros-area">
-        <div class="filtro-grupo">
-          <label>🔍 Tipo:</label>
-          <select id="filtroTipo" onchange="atualizarTempoReal()">
-            <option value="">Todos</option>
-            <option value="Agendar">Agendar</option>
-            <option value="Agendados">Realizar</option>
-            <option value="Preferencial">Preferencial</option>
-          </select>
-        </div>
-        <div class="filtro-grupo">
-          <label>👤 Usuário:</label>
-          <select id="filtroUsuarioReal" onchange="atualizarTempoReal()">
-            <option value="">Todos</option>
-          </select>
-        </div>
-        <div class="filtro-grupo">
-          <button onclick="atualizarTempoReal()">🔄 Atualizar</button>
-        </div>
+    <!-- ABA 1: RESUMO GERAL (COMO O PRINT) -->
+    <div id="abaResumo" class="aba-conteudo active">
+      <div class="tabela-usuarios-container">
+        <div class="tabela-titulo">👥 Atendentes - Resumo do Dia</div>
+        <table>
+          <thead>
+            <tr>
+              <th>Usuário</th>
+              <th class="numero">Qtde</th>
+              <th>Primeiro</th>
+              <th>Último</th>
+              <th>Média Tempo</th>
+              <th>Detalhes</th>
+            </tr>
+          </thead>
+          <tbody id="tabelaResumo">
+            <tr><td colspan="6" class="msg-vazio">Carregando usuários...</td></tr>
+          </tbody>
+        </table>
       </div>
+    </div>
 
+    <!-- ABA 2: TEMPO REAL -->
+    <div id="abaTempoReal" class="aba-conteudo">
       <div class="stats-area">
-        <div class="stat-card verde">
+        <div class="stat-card">
           <div class="label">✅ Atendimentos Hoje</div>
           <div class="valor" id="totalHoje">0</div>
         </div>
-        <div class="stat-card azul">
+        <div class="stat-card">
           <div class="label">📅 Atendimentos Este Mês</div>
           <div class="valor" id="totalMes">0</div>
         </div>
-        <div class="stat-card amarelo">
+        <div class="stat-card">
           <div class="label">👥 Usuários Ativos</div>
           <div class="valor" id="usuariosAtivos">0</div>
         </div>
-        <div class="stat-card vermelho">
-          <div class="label">⏱️ Tempo Médio Entre Chamadas</div>
+        <div class="stat-card">
+          <div class="label">⏱️ Tempo Médio</div>
           <div class="valor" id="tempoMedio">--</div>
         </div>
       </div>
 
-      <div class="tabela-area">
+      <div class="tabela-usuarios-container">
         <div class="tabela-titulo">📱 Últimos 20 Atendimentos</div>
         <table>
           <thead>
@@ -693,22 +574,8 @@
       </div>
     </div>
 
-    <!-- ABA 2: DESEMPENHO -->
-    <div id="abaDesempenho" class="aba-conteudo">
-      <div class="filtros-area">
-        <div class="filtro-grupo">
-          <label>📅 Período:</label>
-          <select id="filtroPeriodo" onchange="atualizarDesempenho()">
-            <option value="dia">Hoje</option>
-            <option value="mes">Este Mês</option>
-            <option value="ano">Este Ano</option>
-          </select>
-        </div>
-        <div class="filtro-grupo">
-          <button onclick="atualizarDesempenho()">🔄 Atualizar</button>
-        </div>
-      </div>
-
+    <!-- ABA 3: GRÁFICOS -->
+    <div id="abaGraficos" class="aba-conteudo">
       <div class="graficos-area">
         <div class="grafico-container">
           <div class="grafico-titulo">📊 Atendimentos por Usuário</div>
@@ -719,98 +586,51 @@
           <canvas id="graficoTipo"></canvas>
         </div>
       </div>
-
-      <div class="tabela-area">
-        <div class="tabela-titulo">📋 Detalhes de Desempenho</div>
-        <table>
-          <thead>
-            <tr>
-              <th>👤 Usuário</th>
-              <th>📊 Total</th>
-              <th>🔴 Agendar</th>
-              <th>🔵 Realizar</th>
-              <th>🟡 Preferencial</th>
-              <th>⏱️ Tempo Médio</th>
-            </tr>
-          </thead>
-          <tbody id="tabelaDesempenho">
-            <tr><td colspan="6" class="msg-vazio">Carregando...</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- ABA 3: RANKING -->
-    <div id="abaRanking" class="aba-conteudo">
-      <div class="filtros-area">
-        <div class="filtro-grupo">
-          <label>🏆 Ordenar por:</label>
-          <select id="filtroOrdenacao" onchange="atualizarRanking()">
-            <option value="total">Total de Atendimentos</option>
-            <option value="agendar">Agendar</option>
-            <option value="realizar">Realizar</option>
-            <option value="preferencial">Preferencial</option>
-          </select>
-        </div>
-        <div class="filtro-grupo">
-          <button onclick="atualizarRanking()">🔄 Atualizar</button>
-        </div>
-      </div>
-
-      <div class="ranking-container">
-        <div class="ranking-titulo">🏆 Top 10 - Mais Atendimentos</div>
-        <div class="ranking-lista" id="rankingLista">
-          <div class="msg-vazio">Carregando...</div>
-        </div>
-      </div>
     </div>
 
     <!-- ABA 4: HISTÓRICO -->
     <div id="abaHistorico" class="aba-conteudo">
-      <div class="filtros-area">
-        <div class="filtro-grupo">
-          <label>👤 Usuário:</label>
-          <select id="filtroUsuarioHist">
-            <option value="">Todos</option>
-          </select>
-        </div>
-        <div class="filtro-grupo">
-          <label>📅 Data:</label>
-          <input type="date" id="filtroData">
-        </div>
-        <div class="filtro-grupo">
-          <label>📌 Tipo:</label>
-          <select id="filtroTipoHist">
-            <option value="">Todos</option>
-            <option value="Agendar">Agendar</option>
-            <option value="Agendados">Realizar</option>
-            <option value="Preferencial">Preferencial</option>
-          </select>
-        </div>
-        <div class="filtro-grupo">
-          <button onclick="atualizarHistorico()">🔍 Buscar</button>
+      <div class="tabela-usuarios-container">
+        <div class="tabela-titulo">📜 Buscar Histórico de Atendimento</div>
+        <div style="padding: 20px; display: flex; gap: 15px; flex-wrap: wrap; align-items: flex-end;">
+          <div>
+            <label style="display: block; color: var(--amarelo-hcpa); margin-bottom: 5px; font-weight: bold;">👤 Usuário:</label>
+            <select id="filtroUsuarioHist" style="padding: 8px; border-radius: 6px; border: none; background: #333; color: var(--amarelo-hcpa);">
+              <option value="">Todos</option>
+            </select>
+          </div>
+          <div>
+            <label style="display: block; color: var(--amarelo-hcpa); margin-bottom: 5px; font-weight: bold;">📅 Data:</label>
+            <input type="date" id="filtroDataHist" style="padding: 8px; border-radius: 6px; border: none; background: #333; color: var(--amarelo-hcpa);">
+          </div>
+          <div>
+            <label style="display: block; color: var(--amarelo-hcpa); margin-bottom: 5px; font-weight: bold;">📌 Tipo:</label>
+            <select id="filtroTipoHist" style="padding: 8px; border-radius: 6px; border: none; background: #333; color: var(--amarelo-hcpa);">
+              <option value="">Todos</option>
+              <option value="Agendar">Agendar</option>
+              <option value="Agendados">Realizar</option>
+              <option value="Preferencial">Preferencial</option>
+            </select>
+          </div>
+          <button onclick="buscarHistorico()" style="padding: 8px 20px; background: var(--verde-claro); color: #fff; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">🔍 Buscar</button>
         </div>
       </div>
 
-      <div class="tabela-area">
-        <div class="tabela-titulo">📜 Histórico Completo de Atendimentos</div>
-        <table>
-          <thead>
-            <tr>
-              <th>📅 Data</th>
-              <th>⏰ Hora</th>
-              <th>👤 Usuário</th>
-              <th>📌 Tipo</th>
-              <th>🎫 Senha</th>
-              <th>🪟 Guichê</th>
-              <th>⏱️ Intervalo</th>
-            </tr>
-          </thead>
-          <tbody id="tabelaHistorico">
-            <tr><td colspan="7" class="msg-vazio">Carregando...</td></tr>
-          </tbody>
-        </table>
+      <div class="tabela-usuarios-container" style="margin-top: 20px;">
+        <div class="tabela-titulo">📋 Resultados</div>
+        <div id="resultadosHistorico" style="padding: 20px;">
+          <div class="msg-vazio">Use os filtros acima para buscar</div>
+        </div>
       </div>
+    </div>
+  </div>
+
+  <!-- MODAL HISTÓRICO -->
+  <div id="modalHistorico" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="fecharModal()">&times;</span>
+      <h2 id="modalTitulo">Histórico de Atendimentos</h2>
+      <div id="modalConteudo" class="historico-items"></div>
     </div>
   </div>
 
@@ -836,21 +656,25 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // Carregar usuários autorizados do Firebase
+    // Carregar usuários autorizados
     db.ref("usuariosAutorizados").on("value", snap => {
       const usuarios = snap.val() || [];
       usuariosAutorizados = ["vtcosta"];
       if (Array.isArray(usuarios)) {
-        usuariosAutorizados = usuariosAutorizados.concat(usuarios);
+        usuariosAutorizados.push(...usuarios);
+      } else if (typeof usuarios === "object") {
+        usuariosAutorizados.push(...Object.values(usuarios));
       }
       atualizarSelectsUsuarios();
     });
 
-    // Carregar atendimentos em tempo real
+    // Carregar atendimentos
     db.ref("atendimentos").on("value", snap => {
       atendimentosData = snap.val() || {};
       if (usuarioLogadoChefia) {
+        atualizarResumo();
         atualizarTempoReal();
+        atualizarGraficos();
         verificarInatividade();
       }
     });
@@ -864,11 +688,14 @@
         usuarioLogadoChefia = usuario;
         document.getElementById("loginContainer").style.display = "none";
         document.getElementById("painelContainer").style.display = "block";
-        document.getElementById("usuarioAtual").textContent = `👤 Usuário: ${usuarioLogadoChefia} (Modo Chefia)`;
+        document.getElementById("usuarioAtual").textContent = `👤 Usuário: ${usuarioLogadoChefia}`;
         msg.textContent = "";
-        atualizarTempoReal();
-        atualizarDesempenho();
-        atualizarRanking();
+        
+        setTimeout(() => {
+          atualizarResumo();
+          atualizarTempoReal();
+          atualizarGraficos();
+        }, 500);
         return;
       }
 
@@ -891,54 +718,195 @@
       document.getElementById(abaId).classList.add("active");
       event.target.classList.add("active");
 
+      if (aba === "resumo") atualizarResumo();
       if (aba === "tempo-real") atualizarTempoReal();
-      if (aba === "desempenho") atualizarDesempenho();
-      if (aba === "ranking") atualizarRanking();
-      if (aba === "historico") atualizarHistorico();
+      if (aba === "graficos") atualizarGraficos();
     }
 
     function atualizarSelectsUsuarios() {
-      const selects = ["filtroUsuarioReal", "filtroUsuarioHist"];
-      selects.forEach(id => {
-        const select = document.getElementById(id);
-        const valorAtual = select.value;
+      const select = document.getElementById("filtroUsuarioHist");
+      if (select) {
         select.innerHTML = '<option value="">Todos</option>';
         usuariosAutorizados.forEach(u => {
           select.innerHTML += `<option value="${u}">${u}</option>`;
         });
-        select.value = valorAtual;
-      });
+      }
     }
 
-    function verificarInatividade() {
+    function atualizarResumo() {
       const agora = new Date();
-      const alertaDiv = document.getElementById("alertaInatividade");
-      let inativos = [];
+      const hojeStr = agora.toISOString().slice(0, 10);
+      const tbody = document.getElementById("tabelaResumo");
+      tbody.innerHTML = "";
+
+      const usuariosStats = {};
 
       for (let usuario in atendimentosData) {
         const atendimentos = Object.values(atendimentosData[usuario]);
-        if (atendimentos.length === 0) continue;
+        const hoje = atendimentos.filter(a => new Date(a.timestamp).toISOString().slice(0, 10) === hojeStr);
 
-        const ultimoAtendimento = atendimentos[atendimentos.length - 1];
-        const tempoDecorrido = agora.getTime() - ultimoAtendimento.timestamp;
-        const minutos = Math.floor(tempoDecorrido / 60000);
+        if (hoje.length === 0) continue;
 
-        if (minutos > 30) {
-          inativos.push(`${usuario} (${minutos} min inativo)`);
+        hoje.sort((a, b) => a.timestamp - b.timestamp);
+
+        let tempos = [];
+        for (let i = 1; i < hoje.length; i++) {
+          tempos.push(hoje[i].timestamp - hoje[i - 1].timestamp);
         }
+
+        const tempoMedio = tempos.length ? formatTempo(Math.round(tempos.reduce((a, b) => a + b) / tempos.length / 1000)) : "--";
+
+        usuariosStats[usuario] = {
+          total: hoje.length,
+          primeiro: new Date(hoje[0].timestamp).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }),
+          ultimo: new Date(hoje[hoje.length - 1].timestamp).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }),
+          tempoMedio,
+          atendimentos: hoje
+        };
       }
 
-      if (inativos.length > 0) {
-        alertaDiv.innerHTML = `⚠️ <strong>Atenção!</strong> Usuários inativos por mais de 30 minutos: ${inativos.join(", ")}`;
-        alertaDiv.style.display = "block";
-      } else {
-        alertaDiv.style.display = "none";
+      const usuarios = Object.keys(usuariosStats).sort((a, b) => usuariosStats[b].total - usuariosStats[a].total);
+
+      if (usuarios.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" class="msg-vazio">Nenhum atendimento hoje</td></tr>';
+        return;
+      }
+
+      usuarios.forEach(usuario => {
+        const stats = usuariosStats[usuario];
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${usuario}</td>
+          <td class="numero">${stats.total}</td>
+          <td>${stats.primeiro}</td>
+          <td>${stats.ultimo}</td>
+          <td><span class="tempo-badge">${stats.tempoMedio}</span></td>
+          <td><button class="btn-ver" onclick="abrirHistoricoUsuario('${usuario}', ${JSON.stringify(stats.atendimentos).replace(/'/g, "&apos;")})">Ver</button></td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function abrirHistoricoUsuario(usuario, atendimentos) {
+      const modal = document.getElementById("modalHistorico");
+      const titulo = document.getElementById("modalTitulo");
+      const conteudo = document.getElementById("modalConteudo");
+
+      titulo.textContent = `📊 Histórico - ${usuario}`;
+      conteudo.innerHTML = "";
+
+      atendimentos.forEach(a => {
+        const data = new Date(a.timestamp);
+        const hora = data.toLocaleTimeString("pt-BR");
+        const dataStr = data.toLocaleDateString("pt-BR");
+        const tipoClass = a.tipo === "Agendar" ? "status-agendar" : 
+                         a.tipo === "Agendados" ? "status-realizar" : "status-preferencial";
+
+        const div = document.createElement("div");
+        div.className = "historico-item";
+        div.innerHTML = `
+          <div class="historico-item-info">
+            <div class="historico-item-label">Data</div>
+            <div class="historico-item-valor">${dataStr}</div>
+          </div>
+          <div class="historico-item-info">
+            <div class="historico-item-label">Hora</div>
+            <div class="historico-item-valor">${hora}</div>
+          </div>
+          <div class="historico-item-info">
+            <div class="historico-item-label">Tipo</div>
+            <div class="historico-item-valor ${tipoClass}">${a.tipo}</div>
+          </div>
+          <div class="historico-item-info">
+            <div class="historico-item-label">Senha</div>
+            <div class="historico-item-valor">${a.senha}</div>
+          </div>
+          <div class="historico-item-info">
+            <div class="historico-item-label">Guichê</div>
+            <div class="historico-item-valor">${a.guiche}</div>
+          </div>
+        `;
+        conteudo.appendChild(div);
+      });
+
+      modal.style.display = "block";
+    }
+
+    function fecharModal() {
+      document.getElementById("modalHistorico").style.display = "none";
+    }
+
+    window.onclick = function(event) {
+      const modal = document.getElementById("modalHistorico");
+      if (event.target === modal) {
+        modal.style.display = "none";
       }
     }
 
+    function buscarHistorico() {
+      const usuario = document.getElementById("filtroUsuarioHist").value;
+      const data = document.getElementById("filtroDataHist").value;
+      const tipo = document.getElementById("filtroTipoHist").value;
+
+      const resultados = document.getElementById("resultadosHistorico");
+      resultados.innerHTML = "";
+
+      let todosAtendimentos = [];
+
+      for (let usu in atendimentosData) {
+        if (usuario && usu !== usuario) continue;
+
+        const atendimentos = Object.values(atendimentosData[usu]);
+        atendimentos.forEach(a => {
+          const dataAtend = new Date(a.timestamp).toISOString().slice(0, 10);
+          
+          if (data && dataAtend !== data) return;
+          if (tipo && a.tipo !== tipo) return;
+
+          todosAtendimentos.push({...a, usuario: usu});
+        });
+      }
+
+      todosAtendimentos.sort((a, b) => b.timestamp - a.timestamp);
+
+      if (todosAtendimentos.length === 0) {
+        resultados.innerHTML = '<div class="msg-vazio">Nenhum resultado encontrado</div>';
+        return;
+      }
+
+      const div = document.createElement("div");
+      div.className = "historico-items";
+
+      todosAtendimentos.forEach(a => {
+        const data = new Date(a.timestamp);
+        const hora = data.toLocaleTimeString("pt-BR");
+        const dataStr = data.toLocaleDateString("pt-BR");
+        const tipoClass = a.tipo === "Agendar" ? "status-agendar" : 
+                         a.tipo === "Agendados" ? "status-realizar" : "status-preferencial";
+
+        const item = document.createElement("div");
+        item.className = "historico-item";
+        item.innerHTML = `
+          <div class="historico-item-info">
+            <div class="historico-item-label">Usuário</div>
+            <div class="historico-item-valor">${a.usuario}</div>
+          </div>
+          <div class="historico-item-info">
+            <div class="historico-item-label">Data/Hora</div>
+            <div class="historico-item-valor">${dataStr} ${hora}</div>
+          </div>
+          <div class="historico-item-info">
+            <div class="historico-item-label">Tipo | Senha | Guichê</div>
+            <div class="historico-item-valor ${tipoClass}">${a.tipo} | ${a.senha} | ${a.guiche}</div>
+          </div>
+        `;
+        div.appendChild(item);
+      });
+
+      resultados.appendChild(div);
+    }
+
     function atualizarTempoReal() {
-      const filtroTipo = document.getElementById("filtroTipo").value;
-      const filtroUsuario = document.getElementById("filtroUsuarioReal").value;
       const agora = new Date();
       const hojeStr = agora.toISOString().slice(0, 10);
 
@@ -953,9 +921,6 @@
         atendimentos.forEach(a => {
           const dataAtend = new Date(a.timestamp).toISOString().slice(0, 10);
 
-          if (filtroTipo && a.tipo !== filtroTipo) return;
-          if (filtroUsuario && usuario !== filtroUsuario) return;
-
           if (dataAtend === hojeStr) totalHoje++;
 
           const dataObj = new Date(a.timestamp);
@@ -964,7 +929,7 @@
           }
 
           usuariosAtivosList.add(usuario);
-          todosAtendimentos.push({...a, usuario, data: dataAtend});
+          todosAtendimentos.push({...a, usuario});
 
           if (atendimentos.length > 1) {
             const idx = atendimentos.indexOf(a);
@@ -993,14 +958,14 @@
       todosAtendimentos.sort((a, b) => b.timestamp - a.timestamp);
       todosAtendimentos.slice(0, 20).forEach(a => {
         const hora = new Date(a.timestamp).toLocaleTimeString("pt-BR");
-        const statusClass = a.tipo === "Agendar" ? "status-agendar" : 
-                           a.tipo === "Agendados" ? "status-realizar" : "status-preferencial";
+        const tipoClass = a.tipo === "Agendar" ? "status-agendar" : 
+                         a.tipo === "Agendados" ? "status-realizar" : "status-preferencial";
         
         const tr = document.createElement("tr");
         tr.innerHTML = `
           <td>${hora}</td>
           <td>${a.usuario}</td>
-          <td><span class="status-badge ${statusClass}">${a.tipo}</span></td>
+          <td><span style="color: ${tipoClass === 'status-agendar' ? '#d70000' : tipoClass === 'status-realizar' ? '#0074d9' : '#ffe900'}; font-weight: bold;">${a.tipo}</span></td>
           <td>${a.senha}</td>
           <td>${a.guiche}</td>
         `;
@@ -1008,8 +973,7 @@
       });
     }
 
-    function atualizarDesempenho() {
-      const periodo = document.getElementById("filtroPeriodo").value;
+    function atualizarGraficos() {
       const agora = new Date();
       const hojeStr = agora.toISOString().slice(0, 10);
 
@@ -1018,45 +982,24 @@
 
       for (let usuario in atendimentosData) {
         const atendimentos = Object.values(atendimentosData[usuario]);
-        let atendimentosFiltrados = [];
+        const hoje = atendimentos.filter(a => new Date(a.timestamp).toISOString().slice(0, 10) === hojeStr);
 
-        atendimentos.forEach(a => {
-          const dataAtend = new Date(a.timestamp);
-          const dataStr = dataAtend.toISOString().slice(0, 10);
+        if (hoje.length === 0) continue;
 
-          let incluir = false;
-          if (periodo === "dia") {
-            incluir = dataStr === hojeStr;
-          } else if (periodo === "mes") {
-            incluir = dataAtend.getMonth() === agora.getMonth() && dataAtend.getFullYear() === agora.getFullYear();
-          } else if (periodo === "ano") {
-            incluir = dataAtend.getFullYear() === agora.getFullYear();
-          }
-
-          if (incluir) atendimentosFiltrados.push(a);
-        });
-
-        if (atendimentosFiltrados.length === 0) continue;
-
-        const totalAgendar = atendimentosFiltrados.filter(a => a.tipo === "Agendar").length;
-        const totalRealizar = atendimentosFiltrados.filter(a => a.tipo === "Agendados").length;
-        const totalPreferencial = atendimentosFiltrados.filter(a => a.tipo === "Preferencial").length;
+        const totalAgendar = hoje.filter(a => a.tipo === "Agendar").length;
+        const totalRealizar = hoje.filter(a => a.tipo === "Agendados").length;
+        const totalPreferencial = hoje.filter(a => a.tipo === "Preferencial").length;
 
         agendar += totalAgendar;
         realizar += totalRealizar;
         preferencial += totalPreferencial;
 
-        usuariosStats[usuario] = {
-          total: atendimentosFiltrados.length,
-          agendar: totalAgendar,
-          realizar: totalRealizar,
-          preferencial: totalPreferencial
-        };
+        usuariosStats[usuario] = hoje.length;
       }
 
       // Gráfico por usuário
       const usuarios = Object.keys(usuariosStats);
-      const totais = usuarios.map(u => usuariosStats[u].total);
+      const totais = usuarios.map(u => usuariosStats[u]);
 
       const ctxUsuario = document.getElementById("graficoPorUsuario").getContext("2d");
       if (chartPorUsuario) chartPorUsuario.destroy();
@@ -1073,7 +1016,6 @@
               return cores[i % cores.length];
             }),
             borderRadius: 8,
-            borderSkipped: false,
           }]
         },
         options: {
@@ -1099,239 +1041,78 @@
           datasets: [{
             data: [agendar, realizar, preferencial],
             backgroundColor: ['#d70000', '#0074d9', '#ffe900'],
-            borderColor: '#fff',
-            borderWidth: 3
+            borderColor: '#1a1a1a',
+            borderWidth: 2
           }]
         },
         options: {
           responsive: true,
           maintainAspectRatio: true,
           plugins: {
-            legend: {
-              position: 'bottom'
-            }
+            legend: { position: 'bottom' }
           }
         }
       });
-
-      // Tabela
-      const tbody = document.getElementById("tabelaDesempenho");
-      tbody.innerHTML = "";
-
-      usuarios.forEach(usuario => {
-        const stats = usuariosStats[usuario];
-        let tempos = [];
-        const atendimentos = Object.values(atendimentosData[usuario]);
-        atendimentos.forEach((a, i) => {
-          if (i > 0) tempos.push(a.timestamp - atendimentos[i - 1].timestamp);
-        });
-        const tempoMedio = tempos.length ? formatTempo(Math.round(tempos.reduce((a, b) => a + b) / tempos.length / 1000)) : "--";
-
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td><strong>${usuario}</strong></td>
-          <td>${stats.total}</td>
-          <td>${stats.agendar}</td>
-          <td>${stats.realizar}</td>
-          <td>${stats.preferencial}</td>
-          <td>${tempoMedio}</td>
-        `;
-        tbody.appendChild(tr);
-      });
-
-      if (tbody.children.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" class="msg-vazio">Nenhum atendimento neste período</td></tr>';
-      }
     }
 
-    function atualizarRanking() {
-      const ordenacao = document.getElementById("filtroOrdenacao").value;
+    function verificarInatividade() {
       const agora = new Date();
-      const hojeStr = agora.toISOString().slice(0, 10);
-
-      const usuariosRanking = {};
+      const alertaDiv = document.getElementById("alertaInatividade");
+      let inativos = [];
 
       for (let usuario in atendimentosData) {
         const atendimentos = Object.values(atendimentosData[usuario]);
-        const hoje = atendimentos.filter(a => new Date(a.timestamp).toISOString().slice(0, 10) === hojeStr);
-        
-        usuariosRanking[usuario] = {
-          total: hoje.length,
-          agendar: hoje.filter(a => a.tipo === "Agendar").length,
-          realizar: hoje.filter(a => a.tipo === "Agendados").length,
-          preferencial: hoje.filter(a => a.tipo === "Preferencial").length
-        };
-      }
+        if (atendimentos.length === 0) continue;
 
-      const sorted = Object.entries(usuariosRanking).sort((a, b) => {
-        if (ordenacao === "total") return b[1].total - a[1].total;
-        if (ordenacao === "agendar") return b[1].agendar - a[1].agendar;
-        if (ordenacao === "realizar") return b[1].realizar - a[1].realizar;
-        if (ordenacao === "preferencial") return b[1].preferencial - a[1].preferencial;
-      });
+        const ultimoAtendimento = atendimentos[atendimentos.length - 1];
+        const tempoDecorrido = agora.getTime() - ultimoAtendimento.timestamp;
+        const minutos = Math.floor(tempoDecorrido / 60000);
 
-      const lista = document.getElementById("rankingLista");
-      lista.innerHTML = "";
-
-      if (sorted.length === 0) {
-        lista.innerHTML = '<div class="msg-vazio">Nenhum atendimento encontrado</div>';
-        return;
-      }
-
-      sorted.slice(0, 10).forEach((item, index) => {
-        const [usuario, stats] = item;
-        const posicao = index + 1;
-        let classe = "outros";
-        if (posicao === 1) classe = "top1";
-        if (posicao === 2) classe = "top2";
-        if (posicao === 3) classe = "top3";
-
-        const medalhas = ["🥇", "🥈", "🥉"];
-        const medalha = index < 3 ? medalhas[index] : `${posicao}º`;
-
-        const div = document.createElement("div");
-        div.className = `ranking-item ${classe}`;
-        div.innerHTML = `
-          <div class="ranking-posicao">${medalha}</div>
-          <div class="ranking-info">
-            <div class="ranking-nome">${usuario}</div>
-            <div class="ranking-stats">🔴 ${stats.agendar} | 🔵 ${stats.realizar} | 🟡 ${stats.preferencial}</div>
-          </div>
-          <div class="ranking-valor">${stats.total}</div>
-        `;
-        lista.appendChild(div);
-      });
-    }
-
-    function atualizarHistorico() {
-      const usuarioFilt = document.getElementById("filtroUsuarioHist").value;
-      const dataFilt = document.getElementById("filtroData").value;
-      const tipoFilt = document.getElementById("filtroTipoHist").value;
-
-      const tbody = document.getElementById("tabelaHistorico");
-      tbody.innerHTML = "";
-
-      let todosAtendimentos = [];
-
-      for (let usuario in atendimentosData) {
-        if (usuarioFilt && usuario !== usuarioFilt) continue;
-
-        const atendimentos = Object.values(atendimentosData[usuario]);
-        atendimentos.forEach(a => {
-          const dataAtend = a.data || new Date(a.timestamp).toISOString().slice(0, 10);
-          
-          if (dataFilt && dataAtend !== dataFilt) return;
-          if (tipoFilt && a.tipo !== tipoFilt) return;
-
-          todosAtendimentos.push({...a, usuario, dataStr: dataAtend});
-        });
-      }
-
-      todosAtendimentos.sort((a, b) => b.timestamp - a.timestamp);
-
-      if (todosAtendimentos.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" class="msg-vazio">Nenhum resultado encontrado</td></tr>';
-        return;
-      }
-
-      let prevTimestamp = null;
-      todosAtendimentos.forEach(a => {
-        const data = new Date(a.timestamp).toLocaleDateString("pt-BR");
-        const hora = new Date(a.timestamp).toLocaleTimeString("pt-BR");
-        const statusClass = a.tipo === "Agendar" ? "status-agendar" : 
-                           a.tipo === "Agendados" ? "status-realizar" : "status-preferencial";
-        
-        let intervalo = "--";
-        if (prevTimestamp) {
-          const diff = Math.round((a.timestamp - prevTimestamp) / 1000);
-          intervalo = formatTempo(diff);
+        if (minutos > 30) {
+          inativos.push(`${usuario} (${minutos}min)`);
         }
-        prevTimestamp = a.timestamp;
+      }
 
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${data}</td>
-          <td>${hora}</td>
-          <td>${a.usuario}</td>
-          <td><span class="status-badge ${statusClass}">${a.tipo}</span></td>
-          <td>${a.senha}</td>
-          <td>${a.guiche}</td>
-          <td>${intervalo}</td>
-        `;
-        tbody.appendChild(tr);
-      });
+      if (inativos.length > 0) {
+        alertaDiv.innerHTML = `⚠️ <strong>Atenção!</strong> Inativos: ${inativos.join(", ")}`;
+        alertaDiv.style.display = "block";
+      } else {
+        alertaDiv.style.display = "none";
+      }
     }
 
     function exportarExcel() {
       const agora = new Date();
       const data = agora.toLocaleDateString("pt-BR");
-      const hora = agora.toLocaleTimeString("pt-BR");
 
       let workbook = XLSX.utils.book_new();
 
-      // ABA 1: RESUMO
+      // Resumo
       const resumo = [
-        ["PAINEL DE CHEFIA - RESUMO GERAL"],
-        ["Data Exportação", data],
-        ["Hora Exportação", hora],
+        ["PAINEL DE CHEFIA - RESUMO"],
+        ["Data", data],
         [],
-        ["ESTATÍSTICAS HOJE"],
-        ["Total de Atendimentos", document.getElementById("totalHoje").textContent],
-        ["Usuários Ativos", document.getElementById("usuariosAtivos").textContent],
-        ["Tempo Médio", document.getElementById("tempoMedio").textContent],
-        [],
-        ["TOTAL DO MÊS"],
-        ["Atendimentos", document.getElementById("totalMes").textContent]
+        ["Usuário", "Qtde", "Primeiro", "Último", "Tempo Médio"]
       ];
+
+      document.querySelectorAll("#tabelaResumo tr").forEach(tr => {
+        const cells = tr.querySelectorAll("td");
+        if (cells.length === 6) {
+          resumo.push([
+            cells[0].textContent,
+            cells[1].textContent,
+            cells[2].textContent,
+            cells[3].textContent,
+            cells[4].textContent
+          ]);
+        }
+      });
 
       const wsResumo = XLSX.utils.aoa_to_sheet(resumo);
       XLSX.utils.book_append_sheet(workbook, wsResumo, "Resumo");
 
-      // ABA 2: DETALHES POR USUÁRIO
-      const detalhes = [["Usuário", "Total", "Agendar", "Realizar", "Preferencial", "Tempo Médio"]];
-      document.querySelectorAll("#tabelaDesempenho tr").forEach(tr => {
-        const cells = tr.querySelectorAll("td");
-        if (cells.length === 6) {
-          detalhes.push([
-            cells[0].textContent.trim(),
-            cells[1].textContent,
-            cells[2].textContent,
-            cells[3].textContent,
-            cells[4].textContent,
-            cells[5].textContent
-          ]);
-        }
-      });
-
-      const wsDetalhes = XLSX.utils.aoa_to_sheet(detalhes);
-      XLSX.utils.book_append_sheet(workbook, wsDetalhes, "Desempenho");
-
-      // ABA 3: HISTÓRICO
-      const historico = [["Data", "Hora", "Usuário", "Tipo", "Senha", "Guichê", "Intervalo"]];
-      document.querySelectorAll("#tabelaHistorico tr").forEach(tr => {
-        const cells = tr.querySelectorAll("td");
-        if (cells.length === 7) {
-          historico.push([
-            cells[0].textContent,
-            cells[1].textContent,
-            cells[2].textContent,
-            cells[3].textContent.trim(),
-            cells[4].textContent,
-            cells[5].textContent,
-            cells[6].textContent
-          ]);
-        }
-      });
-
-      const wsHistorico = XLSX.utils.aoa_to_sheet(historico);
-      XLSX.utils.book_append_sheet(workbook, wsHistorico, "Histórico");
-
-      XLSX.writeFile(workbook, `Painel_Chefia_${agora.getDate()}-${agora.getMonth()+1}-${agora.getFullYear()}.xlsx`);
-      alert("✅ Excel exportado com sucesso!");
-    }
-
-    function gerarRelatorio() {
-      alert("📋 Relatório gerado!\n\nO arquivo Excel contém:\n✅ Resumo Geral de Atendimentos\n✅ Desempenho por Usuário\n✅ Histórico Completo\n\nO arquivo foi baixado em seu computador!");
+      XLSX.writeFile(workbook, `Painel_Chefia_${agora.getDate()}-${agora.getMonth()+1}.xlsx`);
+      alert("✅ Excel exportado!");
     }
 
     function formatTempo(segundos) {
@@ -1343,16 +1124,13 @@
     // Atualizar a cada 5 segundos
     setInterval(() => {
       if (usuarioLogadoChefia) {
-        atualizarTempoReal();
+        atualizarResumo();
         verificarInatividade();
       }
     }, 5000);
 
     document.getElementById("usuarioLogin").focus();
-    
-    // Set data de hoje
-    const hoje = new Date();
-    document.getElementById("filtroData").valueAsDate = hoje;
+    document.getElementById("filtroDataHist").valueAsDate = new Date();
   </script>
 </body>
 </html>
